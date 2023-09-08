@@ -1,7 +1,7 @@
 package rainbowlog_test
 
 import (
-	"github.com/RambollWong/rainbowlog"
+	"github.com/rambollwong/rainbowlog"
 	"os"
 )
 

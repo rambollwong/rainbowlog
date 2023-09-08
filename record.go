@@ -2,7 +2,7 @@ package rainbowlog
 
 import (
 	"fmt"
-	"github.com/RambollWong/rainbowlog/level"
+	"github.com/rambollwong/rainbowlog/level"
 	"net"
 	"os"
 	"sync"

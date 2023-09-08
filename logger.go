@@ -1,8 +1,8 @@
 package rainbowlog
 
 import (
-	"github.com/RambollWong/rainbowlog/internal/encoder"
-	"github.com/RambollWong/rainbowlog/level"
+	"github.com/rambollwong/rainbowlog/internal/encoder"
+	"github.com/rambollwong/rainbowlog/level"
 	"os"
 )
 

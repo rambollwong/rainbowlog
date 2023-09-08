@@ -1,9 +1,9 @@
-module github.com/RambollWong/rainbowlog
+module github.com/rambollwong/rainbowlog
 
 go 1.19
 
 require (
-	github.com/RambollWong/rainbowcat v0.0.0-20230908104139-8eac0e628860
+	github.com/rambollwong/rainbowcat v0.0.0-20230908104947-0ac248b8fa4a
 	github.com/stretchr/testify v1.8.0
 )
 
