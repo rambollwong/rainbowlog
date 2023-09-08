@@ -1,7 +1,7 @@
 package rainbowlog
 
 import (
-	"github.com/ramboll-max/rainbowlib/pool"
+	"github.com/RambollWong/rainbowcat/pool"
 	"sync"
 )
 

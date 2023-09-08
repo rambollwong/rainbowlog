@@ -1,6 +1,6 @@
 package rainbowlog
 
-import "github.com/ramboll-max/rainbowlog/level"
+import "github.com/RambollWong/rainbowlog/level"
 
 // Hook defines an interface to a record hook.
 type Hook interface {

@@ -1,7 +1,7 @@
 package rainbowlog
 
 import (
-	"github.com/ramboll-max/rainbowlog/internal/encoder"
+	"github.com/RambollWong/rainbowlog/internal/encoder"
 	"net"
 	"time"
 )

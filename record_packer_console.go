@@ -1,7 +1,7 @@
 package rainbowlog
 
 import (
-	"github.com/ramboll-max/rainbowlog/level"
+	"github.com/RambollWong/rainbowlog/level"
 	"runtime"
 	"strconv"
 	"time"
