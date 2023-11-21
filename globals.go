@@ -2,11 +2,12 @@ package rainbowlog
 
 import (
 	"fmt"
-	"github.com/rambollwong/rainbowlog/level"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/rambollwong/rainbowlog/level"
 )
 
 type (
@@ -111,7 +112,7 @@ var (
 	// GlobalErrorStackMarshalFunc extract the stack from err if any.
 	GlobalErrorStackMarshalFunc ErrorStackMarshalFunc
 
-	nowFunc = func() time.Time {
+	TimestampFunc = func() time.Time {
 		return time.Now()
 	}
 )
