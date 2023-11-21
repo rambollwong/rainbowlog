@@ -1,16 +1,14 @@
 package rainbowlog
 
 import (
-	"github.com/rambollwong/rainbowlog/internal/encoder"
 	"net"
 	"time"
+
+	"github.com/rambollwong/rainbowlog/internal/encoder"
 )
 
 var JsonEnc Encoder = encoder.JsonEncoder{}
 var TextEnc Encoder = encoder.TextEncoder{
-	MetaKeys: defaultMetaKeys().Keys(),
-}
-var consoleEnc Encoder = encoder.TextEncoder{
 	MetaKeys: defaultMetaKeys().Keys(),
 }
 
