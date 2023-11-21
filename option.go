@@ -1,8 +1,9 @@
 package rainbowlog
 
 import (
-	"github.com/rambollwong/rainbowlog/level"
 	"io"
+
+	"github.com/rambollwong/rainbowlog/level"
 )
 
 // Option defines logger options for custom using.
@@ -81,7 +82,7 @@ func WithRainbowConsole(enable bool) Option {
 	}
 }
 
-// AppendsEncoderWriters appends writers with an encoder for logger.
+// AppendsEncoderWriters appends writers who use a same encoder to logger.
 func AppendsEncoderWriters(encoder Encoder, writers ...io.Writer) Option {
 	if encoder == nil || len(writers) == 0 {
 		return func(logger *Logger) {}
@@ -96,6 +97,13 @@ func AppendsEncoderWriters(encoder Encoder, writers ...io.Writer) Option {
 	}
 	return func(logger *Logger) {
 		logger.writerEncoders = append(logger.writerEncoders, wep)
+	}
+}
+
+// AppendsHooks appends hooks to logger.
+func AppendsHooks(hooks ...Hook) Option {
+	return func(logger *Logger) {
+		logger.hooks = append(logger.hooks, hooks...)
 	}
 }
 
