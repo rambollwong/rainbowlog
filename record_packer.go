@@ -118,7 +118,7 @@ func (j *RecordPackerForWriter) createMeta() {
 		switch s {
 		case MetaTimeFieldName:
 			*j.meta = j.writerEncoderPair.enc.Key(*j.meta, MetaTimeFieldName)
-			*j.meta = j.writerEncoderPair.enc.Time(*j.meta, j.record.logger.timeFormat, nowFunc())
+			*j.meta = j.writerEncoderPair.enc.Time(*j.meta, j.record.logger.timeFormat, TimestampFunc())
 		case MetaLabelFieldName:
 			if j.record.label == "" {
 				continue
