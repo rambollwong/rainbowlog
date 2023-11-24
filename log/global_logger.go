@@ -3,11 +3,17 @@ package log
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/rambollwong/rainbowlog"
 )
 
-var Logger *rainbowlog.Logger
+var (
+	Logger *rainbowlog.Logger
+
+	DefaultConfigFilePath = "./"
+	DefaultConfigFileName = "rainbowlog.yaml"
+)
 
 // UseDefault will initial the global Logger by using default options.
 //
@@ -64,4 +70,14 @@ func UseRainbowDefault() {
 // UseCustomOptions allows user to initial the global Logger by custom options.
 func UseCustomOptions(opts ...rainbowlog.Option) {
 	Logger = rainbowlog.New(opts...)
+}
+
+// UseDefaultConfigFile allows user to initial the global Logger by global config file and custom options.
+func UseDefaultConfigFile(opts ...rainbowlog.Option) {
+	Logger = rainbowlog.New(append(
+		[]rainbowlog.Option{
+			rainbowlog.WithDefault(),
+			rainbowlog.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
+		}, opts...)...,
+	)
 }

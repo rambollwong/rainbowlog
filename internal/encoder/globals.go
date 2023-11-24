@@ -9,7 +9,7 @@ import (
 const (
 	hex = "0123456789abcdef"
 
-	TimeFormatUnix      = ""
+	TimeFormatUnix      = "UNIX"
 	TimeFormatUnixMs    = "UNIXMS"
 	TimeFormatUnixMicro = "UNIXMICRO"
 )

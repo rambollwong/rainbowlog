@@ -15,6 +15,7 @@ type (
 	CallerMarshalFunc     func(file string, line int) string
 	ErrorMarshalFunc      func(err error) string
 	ErrorStackMarshalFunc func(err error) interface{}
+	EncoderParseFunc      func(encoder string) Encoder
 )
 
 ///////////////////
@@ -24,7 +25,7 @@ type (
 const (
 	// TimeFormatUnix defines a time format that makes time fields to be
 	// serialized as Unix timestamp integers.
-	TimeFormatUnix = ""
+	TimeFormatUnix = "UNIX"
 
 	// TimeFormatUnixMs defines a time format that makes time fields to be
 	// serialized as Unix timestamp integers in milliseconds.
@@ -114,6 +115,17 @@ var (
 
 	TimestampFunc = func() time.Time {
 		return time.Now()
+	}
+
+	GlobalEncoderParseFunc EncoderParseFunc = func(encoder string) Encoder {
+		switch strings.ToLower(encoder) {
+		case "json":
+			return JsonEnc
+		case "txt", "text":
+			return TextEnc
+		default:
+			panic("unsupported encoder: " + encoder)
+		}
 	}
 )
 

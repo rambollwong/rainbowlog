@@ -3,6 +3,9 @@ package rainbowlog
 import (
 	"io"
 
+	"github.com/rambollwong/rainbowcat/filewriter"
+	"github.com/rambollwong/rainbowcat/util"
+	"github.com/rambollwong/rainbowlog/config"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
@@ -147,4 +150,74 @@ func WithTimeFormat(timeFormat string) Option {
 	return func(logger *Logger) {
 		logger.timeFormat = timeFormat
 	}
+}
+
+// WithConfig sets the Logger's properties according to the provided configuration parameters.
+// If the Enable field in the configuration is false, the logger level will be set Disabled.
+// Normally, the WithDefault() option should be set before calling this option.
+func WithConfig(config config.LoggerConfig) Option {
+	if !config.Enable {
+		return WithLevel(level.Disabled)
+	}
+	return func(logger *Logger) {
+		lv := level.FromString(config.Level)
+		if lv == level.None {
+			panic("wrong logger level: " + config.Level)
+		}
+		logger.level = lv
+		logger.label = config.Label
+		logger.stack = config.Stack
+		logger.consolePrint = config.EnableConsolePrinting
+		logger.consoleColor = config.EnableRainbowConsole
+		if config.TimeFormat != "" {
+			logger.timeFormat = config.TimeFormat
+		}
+		if config.SizeRollingFileConfig.Enable {
+			fileSizeLimit, err := util.ParseToBytesSize(config.SizeRollingFileConfig.FileSizeLimit, 1024)
+			if err != nil {
+				panic("wrong file size limit: " + config.SizeRollingFileConfig.FileSizeLimit)
+			}
+			writer, err := filewriter.NewSizeRollingFileWriter(
+				config.SizeRollingFileConfig.LogFilePath,
+				config.SizeRollingFileConfig.LogFileBaseName,
+				config.SizeRollingFileConfig.MaxBackups,
+				fileSizeLimit,
+			)
+			if err != nil {
+				panic("error new size rolling file writer: " + err.Error())
+			}
+			encoder := GlobalEncoderParseFunc(config.SizeRollingFileConfig.Encoder)
+			logger.writerEncoders = append(logger.writerEncoders, WriterEncoderPair{
+				writer: LevelWriterAdapter(writer),
+				enc:    encoder,
+			})
+		}
+		if config.TimeRollingFileConfig.Enable {
+			writer, err := filewriter.NewTimeRollingFileWriter(
+				config.TimeRollingFileConfig.LogFilePath,
+				config.TimeRollingFileConfig.LogFileBaseName,
+				config.TimeRollingFileConfig.MaxBackups,
+				config.TimeRollingFileConfig.RollingPeriod,
+			)
+			if err != nil {
+				panic("error new time rolling file writer: " + err.Error())
+			}
+			encoder := GlobalEncoderParseFunc(config.SizeRollingFileConfig.Encoder)
+			logger.writerEncoders = append(logger.writerEncoders, WriterEncoderPair{
+				writer: LevelWriterAdapter(writer),
+				enc:    encoder,
+			})
+		}
+	}
+}
+
+// WithConfigFile loads the log configuration from the specified configuration file,
+// sets the properties of the Logger according to the configuration parameters.
+// If an error occurs while loading the configuration file, trigger a panic.
+func WithConfigFile(configFile string) Option {
+	cfg, err := config.LoadLoggerConfigFromFile(configFile)
+	if err != nil {
+		panic("error load logger config from file: " + configFile)
+	}
+	return WithConfig(*cfg)
 }

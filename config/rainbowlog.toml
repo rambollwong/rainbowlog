@@ -1,0 +1,23 @@
+# rainbowlog config file
+[rainbowlog]
+Enable = true                   # enable logger
+Level = 'DEBUG'                 # default logger level
+Label = ''                      # default logger label, if empty, will not record the label
+Stack = false                   # whether print stack
+EnableConsolePrinting = true    # whether print log record to console
+EnableRainbowConsole = true     # whether using rainbow colors when printing to console
+TimeFormat = ''                 # the time format of the time in each record, e.g. 'UNIX' or 'UNIXMS' or 'UNIXMICRO' or 'UNIXNANO' or '2006-01-02 15:04:05.000'
+
+[rainbowlog.SizeRollingFileConfig]
+Enable = false                  # enable size rolling file
+LogFilePath = './log'           # the path of log files
+LogFileBaseName = 'rainbow.log' # the base name of log file
+MaxBackups = 10                 # max log file backups, if it is negative, the file rotating will be disabled
+FileSizeLimit = '100M'          # the max size of each log file, it is valid when MaxBackups is not negative
+
+[rainbowlog.TimeRollingFileConfig]
+Enable = false                  # enable time rolling file
+LogFilePath = './log'           # the path of log files
+LogFileBaseName = 'rainbow.log' # the base name of log file
+MaxBackups = 7                  # max log file backups, if it is negative, the file rotating will be disabled
+RollingPeriod = 'DAY'           # the rolling time period for rotating log file, e.g. 'YEAR' or 'MONTH' or 'DAY' or 'HOUR' or 'MINUTE' or 'SECOND'

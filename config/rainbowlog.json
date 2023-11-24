@@ -1,0 +1,25 @@
+{
+  "rainbowlog": {
+    "enable": true,
+    "level": "DEBUG",
+    "label": "",
+    "stack": false,
+    "enableConsolePrinting": true,
+    "enableRainbowConsole": true,
+    "timeFormat": "",
+    "sizeRollingFileConfig": {
+      "enable": false,
+      "logFilePath": "./log",
+      "logFileBaseName": "rainbow.log",
+      "maxBackups": 10,
+      "fileSizeLimit": "100M"
+    },
+    "timeRollingFileConfig": {
+      "enable": false,
+      "logFilePath": "./log",
+      "logFileBaseName": "rainbow.log",
+      "maxBackups": 7,
+      "rollingPeriod": "DAY"
+    }
+  }
+}
