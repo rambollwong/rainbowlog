@@ -10,12 +10,12 @@ rainbowlog:
   sizeRollingFileConfig:
     enable: false                 # enable size rolling file
     logFilePath: ./log            # the path of log files
-    logFileBaseName: rainbow.log  # the base name of log file
+    logFileBaseName: rainbow.s.log  # the base name of log file
     maxBackups: 10                # max log file backups, if it is negative, the file rotating will be disabled
     fileSizeLimit: 100M           # the max size of each log file, it is valid when MaxBackups is not negative
   timeRollingFileConfig:
     enable: false                 # enable time rolling file
     logFilePath: ./log            # the path of log files
-    logFileBaseName: rainbow.log  # the base name of log file
+    logFileBaseName: rainbow.t.log  # the base name of log file
     maxBackups: 7                 # max log file backups, if it is negative, the file rotating will be disabled
     rollingPeriod: DAY            # the rolling time period for rotating log file, e.g. 'YEAR' or 'MONTH' or 'DAY' or 'HOUR' or 'MINUTE' or 'SECOND'

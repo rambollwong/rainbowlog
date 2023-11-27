@@ -10,14 +10,14 @@
     "sizeRollingFileConfig": {
       "enable": false,
       "logFilePath": "./log",
-      "logFileBaseName": "rainbow.log",
+      "logFileBaseName": "rainbow.s.log",
       "maxBackups": 10,
       "fileSizeLimit": "100M"
     },
     "timeRollingFileConfig": {
       "enable": false,
       "logFilePath": "./log",
-      "logFileBaseName": "rainbow.log",
+      "logFileBaseName": "rainbow.t.log",
       "maxBackups": 7,
       "rollingPeriod": "DAY"
     }
