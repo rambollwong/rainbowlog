@@ -1,9 +1,10 @@
 package rainbowlog
 
 import (
+	"os"
+
 	"github.com/rambollwong/rainbowlog/internal/encoder"
 	"github.com/rambollwong/rainbowlog/level"
-	"os"
 )
 
 // WriterEncoderPair wraps a writer and an encoder.
@@ -67,14 +68,19 @@ func New(opts ...Option) *Logger {
 // Optional options for sub logger also be supported.
 func (l *Logger) SubLogger(opts ...Option) *Logger {
 	logger := &Logger{
-		level:          l.level,
-		label:          l.label,
-		writerEncoders: l.writerEncoders,
-		stack:          l.stack,
-		metaKeys:       l.metaKeys.Clone(),
-		consolePrint:   l.consolePrint,
-		consoleColor:   l.consoleColor,
-		recordPool:     nil,
+		level:                 l.level,
+		label:                 l.label,
+		writerEncoders:        l.writerEncoders,
+		stack:                 l.stack,
+		metaKeys:              l.metaKeys.Clone(),
+		consolePrint:          l.consolePrint,
+		consoleColor:          l.consoleColor,
+		levelFieldMarshalFunc: l.levelFieldMarshalFunc,
+		callerMarshalFunc:     l.callerMarshalFunc,
+		errorMarshalFunc:      l.errorMarshalFunc,
+		errorStackMarshalFunc: l.errorStackMarshalFunc,
+		timeFormat:            l.timeFormat,
+		recordPool:            nil,
 	}
 	// apply options
 	for _, opt := range opts {
