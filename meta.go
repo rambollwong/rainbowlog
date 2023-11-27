@@ -42,7 +42,7 @@ func (m *metaKeys) Clone() *metaKeys {
 	if m == nil {
 		return nil
 	}
-	res := &metaKeys{}
+	res := emptyMetaKes()
 	res.SetKeys(m.keys)
 	for s, ints := range m.consoleColors {
 		res.SetKeyColors(s, ints)
