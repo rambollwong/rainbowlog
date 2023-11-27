@@ -3,7 +3,7 @@ module github.com/rambollwong/rainbowlog
 go 1.19
 
 require (
-	github.com/rambollwong/rainbowcat v0.0.0-20231127022510-4d506fe4d6dc
+	github.com/rambollwong/rainbowcat v0.0.0-20231127034005-2671d73fb488
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
 )

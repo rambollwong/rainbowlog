@@ -152,6 +152,8 @@ github.com/rambollwong/rainbowcat v0.0.0-20231127021526-b756854e1f19 h1:kjBTUN6H
 github.com/rambollwong/rainbowcat v0.0.0-20231127021526-b756854e1f19/go.mod h1:/+k4bfgsb8OmPzZbN405+v7X8cVbHaK0imYtM1kJWCc=
 github.com/rambollwong/rainbowcat v0.0.0-20231127022510-4d506fe4d6dc h1:beK4d9lIDzi0YOG96zhm2NPQ+41pOJsO9RNj3AkZN1E=
 github.com/rambollwong/rainbowcat v0.0.0-20231127022510-4d506fe4d6dc/go.mod h1:/+k4bfgsb8OmPzZbN405+v7X8cVbHaK0imYtM1kJWCc=
+github.com/rambollwong/rainbowcat v0.0.0-20231127034005-2671d73fb488 h1:0CbEhE2nh7p2K+zCh4h7c7woAQWv22zFN8kRXaFIu94=
+github.com/rambollwong/rainbowcat v0.0.0-20231127034005-2671d73fb488/go.mod h1:/+k4bfgsb8OmPzZbN405+v7X8cVbHaK0imYtM1kJWCc=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
 github.com/sagikazarmark/locafero v0.3.0 h1:zT7VEGWC2DTflmccN/5T1etyKvxSxpHsjb9cJvm4SvQ=

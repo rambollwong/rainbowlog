@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rambollwong/rainbowcat/filewriter"
+	"github.com/rambollwong/rainbowcat/writer/filewriter"
 	"github.com/spf13/viper"
 )
 

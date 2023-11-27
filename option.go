@@ -3,8 +3,8 @@ package rainbowlog
 import (
 	"io"
 
-	"github.com/rambollwong/rainbowcat/filewriter"
 	"github.com/rambollwong/rainbowcat/util"
+	"github.com/rambollwong/rainbowcat/writer/filewriter"
 	"github.com/rambollwong/rainbowlog/config"
 	"github.com/rambollwong/rainbowlog/level"
 )
