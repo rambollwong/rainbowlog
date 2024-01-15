@@ -2,11 +2,13 @@ package rainbowlog
 
 import (
 	"fmt"
-	"github.com/rambollwong/rainbowlog/level"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/rambollwong/rainbowlog/level"
 )
 
 // Record represents a log record.
@@ -31,10 +33,11 @@ func (r *Record) shouldNotBeNil() {
 	}
 }
 
-// WithLabel sets the label as the META_LABEL field if not empty.
-func (r *Record) WithLabel(label string) *Record {
+// WithLabels sets the labels for the Logger using one or more strings.
+// The labels are joined using the "|" separator.
+func (r *Record) WithLabels(label ...string) *Record {
 	r.shouldNotBeNil()
-	r.label = label
+	r.label = strings.Join(label, "|")
 	return r
 }
 
@@ -133,8 +136,8 @@ func (r *Record) Done() {
 }
 
 // Msg adds the msg as the message field if not empty.
-// NOTICE: this method should be called once only.
-// More times calling can have unexpected result.
+// NOTICE: This method should only be called once。
+// Calling multiple times may cause unpredictable results。
 func (r *Record) Msg(msg string) *Record {
 	if r.strikeOrNot() || msg == "" {
 		return r
@@ -149,6 +152,19 @@ func (r *Record) Msg(msg string) *Record {
 // Msgf adds the formatted msg as the message field if not empty.
 func (r *Record) Msgf(format string, v ...interface{}) *Record {
 	return r.Msg(fmt.Sprintf(format, v...))
+}
+
+// Err sets the given err to the error field when err is not nil。
+// NOTICE: This method should only be called once。
+// Calling multiple times may cause unpredictable results。
+func (r *Record) Err(err error) *Record {
+	if r.strikeOrNot() || err == nil {
+		return r
+	}
+	for _, rp := range r.recordPackers {
+		rp.Err(err)
+	}
+	return r
 }
 
 func (r *Record) Str(key, val string) *Record {
@@ -491,12 +507,12 @@ func (r *Record) Durs(key string, unit time.Duration, vals ...time.Duration) *Re
 	return r
 }
 
-func (r *Record) Interface(key string, i interface{}) *Record {
+func (r *Record) Any(key string, i any) *Record {
 	if r.strikeOrNot() {
 		return r
 	}
 	for _, rp := range r.recordPackers {
-		rp.Interface(key, i)
+		rp.Any(key, i)
 	}
 	return r
 }

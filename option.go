@@ -2,6 +2,7 @@ package rainbowlog
 
 import (
 	"io"
+	"strings"
 
 	"github.com/rambollwong/rainbowcat/util"
 	"github.com/rambollwong/rainbowcat/writer/filewriter"
@@ -38,10 +39,11 @@ func WithLevel(lv level.Level) Option {
 	}
 }
 
-// WithLabel sets logger label.
-func WithLabel(label string) Option {
+// WithLabels sets the labels for the Logger using one or more strings.
+// The labels are joined using the "|" separator and assigned to the Logger's label property.
+func WithLabels(labels ...string) Option {
 	return func(logger *Logger) {
-		logger.label = label
+		logger.label = strings.Join(labels, "|")
 	}
 }
 

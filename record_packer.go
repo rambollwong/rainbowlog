@@ -48,7 +48,7 @@ type recordPacker interface {
 	Times(key, fmt string, vals ...time.Time)
 	Dur(key string, unit, val time.Duration)
 	Durs(key string, unit time.Duration, vals ...time.Duration)
-	Interface(key string, i interface{})
+	Any(key string, i any)
 	IPAddr(key string, ip net.IP)
 	IPPrefix(key string, pfx net.IPNet)
 	MACAddr(key string, ha net.HardwareAddr)
@@ -93,7 +93,7 @@ func (j *RecordPackerForWriter) Err(err error) {
 		return
 	}
 	j.Str(ErrFieldName, j.record.logger.errorMarshalFunc(err))
-	if j.record.stack && GlobalErrorStackMarshalFunc != nil {
+	if j.record.stack && j.record.logger.errorStackMarshalFunc != nil {
 		switch esm := j.record.logger.errorStackMarshalFunc(err).(type) {
 		case nil:
 		case error:
@@ -101,7 +101,7 @@ func (j *RecordPackerForWriter) Err(err error) {
 		case string:
 			j.Str(ErrStackFieldName, esm)
 		default:
-			j.Interface(ErrStackFieldName, esm)
+			j.Any(ErrStackFieldName, esm)
 		}
 	}
 }
@@ -334,7 +334,7 @@ func (j *RecordPackerForWriter) Durs(key string, unit time.Duration, vals ...tim
 	*j.raw = j.writerEncoderPair.enc.Durations(*j.raw, unit, j.record.useIntDur, vals...)
 }
 
-func (j *RecordPackerForWriter) Interface(key string, i interface{}) {
+func (j *RecordPackerForWriter) Any(key string, i any) {
 	*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
 	*j.raw = j.writerEncoderPair.enc.Interface(*j.raw, i)
 }
