@@ -52,14 +52,14 @@ var (
 	// ErrStackFieldName is the field name for err stack.
 	ErrStackFieldName = "stack"
 
-	MetaTimeFieldName   = "META_TIME"
-	MetaCallerFieldName = "META_CALLER"
-	MetaLevelFieldName  = "META_LEVEL"
-	MetaLabelFieldName  = "META_LABEL"
+	MetaTimeFieldName   = "_TIME_"
+	MetaCallerFieldName = "_CALLER_"
+	MetaLevelFieldName  = "_LEVEL_"
+	MetaLabelFieldName  = "_LABEL_"
 
 	// extra meta keys field name for console printing color.
 
-	metaEndFieldName                     = "META_END"
+	metaEndFieldName                     = "_END_"
 	metaKeysColorLevelDebugFieldName     = MetaLevelFieldName + "_DEBUG"
 	metaKeysColorLevelInfoFieldName      = MetaLevelFieldName + "_INFO"
 	metaKeysColorLevelWarnFieldName      = MetaLevelFieldName + "_WARN"
