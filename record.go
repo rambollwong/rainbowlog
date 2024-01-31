@@ -27,36 +27,26 @@ type Record struct {
 	logger *Logger
 }
 
-func (r *Record) shouldNotBeNil() {
-	if r == nil {
-		panic("bug!!! record should not be nil!")
-	}
-}
-
 // WithLabels sets the labels for the Logger using one or more strings.
 // The labels are joined using the "|" separator.
 func (r *Record) WithLabels(label ...string) *Record {
-	r.shouldNotBeNil()
 	r.label = strings.Join(label, "|")
 	return r
 }
 
 // WithLevel sets the level as the META_LEVEL field.
 func (r *Record) WithLevel(lv level.Level) *Record {
-	r.shouldNotBeNil()
 	r.level = lv
 	return r
 }
 
 func (r *Record) WithDoneFunc(f func(msg string)) *Record {
-	r.shouldNotBeNil()
 	r.doneFunc = f
 	return r
 }
 
 // WithCallerSkip adds skip frames when calling caller.
 func (r *Record) WithCallerSkip(skip int) *Record {
-	r.shouldNotBeNil()
 	for _, rp := range r.recordPackers {
 		rp.CallerSkip(skip)
 	}
@@ -65,13 +55,11 @@ func (r *Record) WithCallerSkip(skip int) *Record {
 
 // UseIntDur enables the calculation of Duration to retain only integer digits.
 func (r *Record) UseIntDur() *Record {
-	r.shouldNotBeNil()
 	r.useIntDur = true
 	return r
 }
 
 func (r *Record) strikeOrNot() bool {
-	r.shouldNotBeNil()
 	if r.level >= r.logger.level {
 		return false
 	}
@@ -81,7 +69,6 @@ func (r *Record) strikeOrNot() bool {
 // Reset the record instance.
 // This should be called before the record is used again.
 func (r *Record) Reset() {
-	r.shouldNotBeNil()
 	for _, rp := range r.recordPackers {
 		rp.Reset()
 	}
@@ -93,7 +80,6 @@ func (r *Record) Reset() {
 
 // Discard disables the record that it won't be printed.
 func (r *Record) Discard() *Record {
-	r.shouldNotBeNil()
 	r.level = level.Disabled
 	return r
 }
@@ -116,20 +102,21 @@ func (r *Record) fatalOrPanic() {
 // NOTICE: once this method is called, the *Record should be disposed.
 // Calling Done twice can have unexpected result.
 func (r *Record) Done() {
-	r.shouldNotBeNil()
 	for _, hook := range r.logger.hooks {
 		hook.RunHook(r, r.level, r.msg)
 	}
 	if r.doneFunc != nil {
 		defer r.doneFunc(r.msg)
 	}
-	if r.strikeOrNot() {
-		return
-	}
 
 	// recycling
 	defer r.logger.recordPool.Put(r)
 	defer r.fatalOrPanic()
+
+	if r.strikeOrNot() {
+		return
+	}
+
 	for _, rp := range r.recordPackers {
 		rp.Done()
 	}
