@@ -14,7 +14,7 @@ type (
 	LevelFieldMarshalFunc func(level.Level) string
 	CallerMarshalFunc     func(file string, line int) string
 	ErrorMarshalFunc      func(err error) string
-	ErrorStackMarshalFunc func(err error) interface{}
+	ErrorStackMarshalFunc func(err error) any
 	EncoderParseFunc      func(encoder string) Encoder
 )
 
@@ -111,7 +111,9 @@ var (
 	}
 
 	// GlobalErrorStackMarshalFunc extract the stack from err if any.
-	GlobalErrorStackMarshalFunc ErrorStackMarshalFunc
+	GlobalErrorStackMarshalFunc ErrorStackMarshalFunc = func(err error) any {
+		return nil
+	}
 
 	TimestampFunc = func() time.Time {
 		return time.Now()
