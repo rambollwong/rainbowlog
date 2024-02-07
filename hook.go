@@ -2,17 +2,17 @@ package rainbowlog
 
 import "github.com/rambollwong/rainbowlog/level"
 
-// Hook defines an interface to a record hook.
+// Hook defines an interface to a Record hook.
 type Hook interface {
 	// RunHook runs the hook with the event.
-	RunHook(r *Record, level level.Level, message string)
+	RunHook(r Record, level level.Level, message string)
 }
 
 // HookFunc is an adaptor to allow the use of an ordinary function as a Hook.
-type HookFunc func(r *Record, level level.Level, message string)
+type HookFunc func(r Record, level level.Level, message string)
 
 // RunHook implements the Hook interface.
-func (hf HookFunc) RunHook(r *Record, level level.Level, message string) {
+func (hf HookFunc) RunHook(r Record, level level.Level, message string) {
 	hf(r, level, message)
 }
 
@@ -22,7 +22,7 @@ type LevelHook struct {
 }
 
 // RunHook implements the Hook interface.
-func (lh LevelHook) RunHook(r *Record, lv level.Level, message string) {
+func (lh LevelHook) RunHook(r Record, lv level.Level, message string) {
 	switch lv {
 	case level.Debug:
 		if lh.DebugHook != nil {

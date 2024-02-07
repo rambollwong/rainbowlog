@@ -57,7 +57,7 @@ type recordPacker interface {
 var _ recordPacker = (*RecordPackerForWriter)(nil)
 
 type RecordPackerForWriter struct {
-	record               *Record
+	record               *LogRecord
 	meta                 *[]byte
 	raw                  *[]byte
 	callerSkipFrameCount int

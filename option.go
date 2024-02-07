@@ -54,8 +54,8 @@ func WithStack(enable bool) Option {
 	}
 }
 
-// WithMetaKeys sets meta key field names for each record.
-// Meta keys data will be placed at the front of the record.
+// WithMetaKeys sets meta key field names for each Record.
+// Meta keys data will be placed at the front of the Record.
 func WithMetaKeys(keys ...string) Option {
 	return func(logger *Logger) {
 		logger.metaKeys.SetKeys(keys)
@@ -132,7 +132,7 @@ func WithCallerMarshalFunc(callerMarshalFunc CallerMarshalFunc) Option {
 }
 
 // WithErrorMarshalFunc sets the ErrorMarshalFunc for logger.
-// If record.Err() has been invoked, ErrorMarshalFunc will be invoked when printing logs.
+// If Record.Err() has been invoked, ErrorMarshalFunc will be invoked when printing logs.
 // The marshal result string will be used as the value of error key field.
 func WithErrorMarshalFunc(errorMarshalFunc ErrorMarshalFunc) Option {
 	return func(logger *Logger) {

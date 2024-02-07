@@ -91,8 +91,8 @@ func (l *Logger) SubLogger(opts ...Option) *Logger {
 	return logger
 }
 
-func (l *Logger) createRecord() *Record {
-	r := &Record{
+func (l *Logger) createRecord() Record {
+	r := &LogRecord{
 		recordPackers: nil,
 		level:         level.Disabled,
 		label:         l.label,
@@ -139,56 +139,56 @@ func (l *Logger) createRecord() *Record {
 }
 
 func (l *Logger) initLogger() {
-	// init record pool
+	// init Record pool
 	l.recordPool = newRecordPool(l.createRecord)
 }
 
-// Record create a new *Record with basic.
-func (l *Logger) Record() *Record {
+// Record create a new Record with basic.
+func (l *Logger) Record() Record {
 	if l.level == level.Disabled {
-		return nil
+		return nilRecord
 	}
 	r := l.recordPool.Get()
-	r.label = l.label
+	r.WithLabels(l.label)
 	return r
 }
 
-// Level create a new *Record with the logger level given.
-func (l *Logger) Level(le level.Level) *Record {
+// Level create a new Record with the logger level given.
+func (l *Logger) Level(le level.Level) Record {
 	if l.level == level.Disabled {
-		return nil
+		return nilRecord
 	}
 	r := l.Record()
-	r.level = le
+	r.WithLevel(le)
 	return r
 }
 
-// Debug create a new *Record with debug level setting.
-func (l *Logger) Debug() *Record {
+// Debug create a new Record with debug level setting.
+func (l *Logger) Debug() Record {
 	return l.Level(level.Debug)
 }
 
-// Info create a new *Record with info level setting.
-func (l *Logger) Info() *Record {
+// Info create a new Record with info level setting.
+func (l *Logger) Info() Record {
 	return l.Level(level.Info)
 }
 
-// Warn create a new *Record with warn level setting.
-func (l *Logger) Warn() *Record {
+// Warn create a new Record with warn level setting.
+func (l *Logger) Warn() Record {
 	return l.Level(level.Warn)
 }
 
-// Error create a new *Record with error level setting.
-func (l *Logger) Error() *Record {
+// Error create a new Record with error level setting.
+func (l *Logger) Error() Record {
 	return l.Level(level.Error)
 }
 
-// Fatal create a new *Record with fatal level setting.
-func (l *Logger) Fatal() *Record {
+// Fatal create a new Record with fatal level setting.
+func (l *Logger) Fatal() Record {
 	return l.Level(level.Fatal)
 }
 
-// Panic create a new *Record with panic level setting.
-func (l *Logger) Panic() *Record {
+// Panic create a new Record with panic level setting.
+func (l *Logger) Panic() Record {
 	return l.Level(level.Panic)
 }

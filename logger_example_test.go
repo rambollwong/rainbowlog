@@ -21,7 +21,7 @@ func ExampleNew() {
 		rainbowlog.WithMetaKeys(rainbowlog.MetaLevelFieldName, rainbowlog.MsgFieldName))
 	log2.Debug().Msg("Hello world!").Done()
 
-	// Output: {"META_LEVEL":"INFO","message":"Hello world!"}
+	// Output: {"_LEVEL_":"INFO","message":"Hello world!"}
 	//DEBUG > Hello world!
 }
 
@@ -30,10 +30,10 @@ func ExampleLogger_SubLogger() {
 
 	subLog := log.SubLogger(
 		rainbowlog.WithMetaKeys(rainbowlog.MetaLabelFieldName),
-		rainbowlog.WithLabel("NewLabel"),
+		rainbowlog.WithLabels("NewLabel"),
 	)
 	subLog.Info().Msg("Hello world!").Done()
-	// Output: {"META_LABEL":"NewLabel","message":"Hello world!"}
+	// Output: {"_LABEL_":"NewLabel","message":"Hello world!"}
 }
 
 func ExampleLogger_Record() {
@@ -44,8 +44,8 @@ func ExampleLogger_Record() {
 	log.Record().WithLevel(level.Info).Msg("Hello world!").Done()
 	log.Record().WithLevel(level.Debug).Msg("Hello world!").Done()
 
-	// Output: {"META_LEVEL":"INFO","message":"Hello world!"}
-	//{"META_LEVEL":"DEBUG","message":"Hello world!"}
+	// Output: {"_LEVEL_":"INFO","message":"Hello world!"}
+	//{"_LEVEL_":"DEBUG","message":"Hello world!"}
 }
 
 func ExampleLogger_Info() {
@@ -55,7 +55,7 @@ func ExampleLogger_Info() {
 	)
 	log.Info().Msg("Hello world!").Done()
 
-	// Output: {"META_LEVEL":"INFO","message":"Hello world!"}
+	// Output: {"_LEVEL_":"INFO","message":"Hello world!"}
 }
 
 // TODO: Debug
@@ -65,3 +65,5 @@ func ExampleLogger_Info() {
 // TODO: CustomMetaKeyFieldName
 
 // TODO: CustomTimestamp
+
+// TODO: Disabled
