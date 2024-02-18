@@ -1,10 +1,13 @@
 package rainbowlog
 
 import (
-	"github.com/rambollwong/rainbowlog/level"
+	"fmt"
+	"net"
 	"runtime"
 	"strconv"
 	"time"
+
+	"github.com/rambollwong/rainbowlog/level"
 )
 
 var _ recordPacker = (*ConsolePacker)(nil)
@@ -14,19 +17,19 @@ type ConsolePacker struct {
 	consoleColor bool
 }
 
-func (j *ConsolePacker) Msg(msg string) {
+func (j *ConsolePacker) printCall(consoleColorsKey string, call func(j *ConsolePacker)) {
 	var cs []int
 	// key color printing
 	if j.consoleColor {
-		cs = j.record.logger.metaKeys.ConsoleColors(MsgFieldName)
+		cs = j.record.logger.metaKeys.ConsoleColors(consoleColorsKey)
 		if cs != nil {
 			for _, c := range cs {
 				*j.raw = colorStart(*j.raw, c)
 			}
 		}
 	}
-	// key & value field print
-	j.RecordPackerForWriter.Msg(msg)
+	// field print
+	call(j)
 	// end key color printing
 	if cs != nil {
 		for i := 0; i < len(cs); i++ {
@@ -35,29 +38,20 @@ func (j *ConsolePacker) Msg(msg string) {
 	}
 }
 
+func (j *ConsolePacker) Msg(msg string) {
+	j.printCall(MsgFieldName, func(j *ConsolePacker) {
+		// key & value field print
+		j.RecordPackerForWriter.Msg(msg)
+	})
+}
+
 func (j *ConsolePacker) Err(err error) {
 	if err == nil || err.Error() == "" {
 		return
 	}
-	var cs []int
-	// key color printing
-	if j.consoleColor {
-		cs = j.record.logger.metaKeys.ConsoleColors(ErrFieldName)
-		if cs != nil {
-			for _, c := range cs {
-				*j.raw = colorStart(*j.raw, c)
-			}
-		}
-	}
-
-	j.RecordPackerForWriter.Err(err)
-
-	// end key color printing
-	if cs != nil {
-		for i := 0; i < len(cs); i++ {
-			*j.raw = colorEnd(*j.raw)
-		}
-	}
+	j.printCall(ErrFieldName, func(j *ConsolePacker) {
+		j.RecordPackerForWriter.Err(err)
+	})
 }
 
 func (j *ConsolePacker) printMetaLevelStart(dst *[]byte) int {
@@ -132,35 +126,22 @@ func (j *ConsolePacker) printFirstMetaStart(dst *[]byte) int {
 		switch j.record.level {
 		case level.Debug:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelDebugLineFieldName)
-			break
 		case level.Info:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelInfoLineFieldName)
-			break
 		case level.Warn:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelWarnLineFieldName)
-			break
 		case level.Error:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelErrorLineFieldName)
-			break
 		case level.Panic:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelPanicLineFieldName)
-			break
 		case level.Fatal:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelFatalLineFieldName)
-			break
 		case level.Trace:
 			cs = j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelTraceLineFieldName)
-			break
 		default:
 			return 0
 		}
 		if cs != nil {
-			//starter := bytesPool.Get()
-			//for _, c := range cs {
-			//	*starter = colorStart(*starter, c)
-			//}
-			//*starter = colorStart(*starter, ColorBlack)
-			//*dst = append(*starter, *dst...)
 			for _, c := range cs {
 				*dst = colorStart(*dst, c)
 			}
@@ -281,6 +262,276 @@ func (j *ConsolePacker) Done() {
 	if err != nil && ErrorHandler != nil {
 		ErrorHandler(err)
 	}
+}
+
+func (j *ConsolePacker) Str(key, val string) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.String(*j.raw, val)
+}
+
+func (j *ConsolePacker) Strs(key string, vals ...string) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Strings(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Stringer(key string, val fmt.Stringer) {
+	j.Str(key, val.String())
+}
+
+func (j *ConsolePacker) Stringers(key string, vals ...fmt.Stringer) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.ArrayStart(*j.raw)
+	for i, val := range vals {
+		if i > 0 {
+			*j.raw = j.writerEncoderPair.enc.ArrayDelim(*j.raw)
+		}
+		*j.raw = j.writerEncoderPair.enc.String(*j.raw, val.String())
+	}
+	*j.raw = j.writerEncoderPair.enc.ArrayEnd(*j.raw)
+}
+
+func (j *ConsolePacker) Bytes(key string, val []byte) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Bytes(*j.raw, val)
+}
+
+func (j *ConsolePacker) Hex(key string, val []byte) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Hex(*j.raw, val)
+}
+
+func (j *ConsolePacker) Int(key string, val int) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int(*j.raw, val)
+}
+
+func (j *ConsolePacker) Ints(key string, vals ...int) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Ints(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Int8(key string, val int8) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int8(*j.raw, val)
+}
+
+func (j *ConsolePacker) Int8s(key string, vals ...int8) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int8s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Int16(key string, val int16) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int16(*j.raw, val)
+}
+
+func (j *ConsolePacker) Int16s(key string, vals ...int16) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int16s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Int32(key string, val int32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int32(*j.raw, val)
+}
+
+func (j *ConsolePacker) Int32s(key string, vals ...int32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int32s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Int64(key string, val int64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int64(*j.raw, val)
+}
+
+func (j *ConsolePacker) Int64s(key string, vals ...int64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Int64s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Uint(key string, val uint) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint(*j.raw, val)
+}
+
+func (j *ConsolePacker) Uints(key string, vals ...uint) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uints(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Uint8(key string, val uint8) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint8(*j.raw, val)
+}
+
+func (j *ConsolePacker) Uint8s(key string, vals ...uint8) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint8s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Uint16(key string, val uint16) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint16(*j.raw, val)
+}
+
+func (j *ConsolePacker) Uint16s(key string, vals ...uint16) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint16s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Uint32(key string, val uint32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint32(*j.raw, val)
+}
+
+func (j *ConsolePacker) Uint32s(key string, vals ...uint32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint32s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Uint64(key string, val uint64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint64(*j.raw, val)
+}
+
+func (j *ConsolePacker) Uint64s(key string, vals ...uint64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Uint64s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Float32(key string, val float32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Float32(*j.raw, val)
+}
+
+func (j *ConsolePacker) Float32s(key string, vals ...float32) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Float32s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Float64(key string, val float64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Float64(*j.raw, val)
+}
+
+func (j *ConsolePacker) Float64s(key string, vals ...float64) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Float64s(*j.raw, vals...)
+}
+
+func (j *ConsolePacker) Time(key, fmt string, val time.Time) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Time(*j.raw, fmt, val)
+}
+
+func (j *ConsolePacker) Times(key, fmt string, vals ...time.Time) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Times(*j.raw, fmt, vals...)
+}
+
+func (j *ConsolePacker) Dur(key string, unit, val time.Duration) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Duration(*j.raw, unit, j.record.useIntDur, val)
+}
+
+func (j *ConsolePacker) Durs(key string, unit time.Duration, vals ...time.Duration) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Durations(*j.raw, unit, j.record.useIntDur, vals...)
+}
+
+func (j *ConsolePacker) Any(key string, i any) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.Interface(*j.raw, i)
+}
+
+func (j *ConsolePacker) IPAddr(key string, ip net.IP) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.IPAddr(*j.raw, ip)
+}
+
+func (j *ConsolePacker) IPPrefix(key string, pfx net.IPNet) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.IPPrefix(*j.raw, pfx)
+}
+
+func (j *ConsolePacker) MACAddr(key string, ha net.HardwareAddr) {
+	j.printCall(keysColorName, func(j *ConsolePacker) {
+		*j.raw = j.writerEncoderPair.enc.Key(*j.raw, key)
+	})
+	*j.raw = j.writerEncoderPair.enc.MACAddr(*j.raw, ha)
 }
 
 func colorStart(dst []byte, color int) []byte {

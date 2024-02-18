@@ -75,6 +75,8 @@ var (
 	metaKeysColorLevelPanicLineFieldName = MetaLevelFieldName + "_PANIC_LINE"
 	metaKeysColorLevelTraceLineFieldName = MetaLevelFieldName + "_TRACE_LINE"
 
+	keysColorName = "___"
+
 	GlobalDurationValueUseInt = false
 
 	DefaultStack = false
@@ -205,7 +207,7 @@ func defaultMetaKeys() *metaKeys {
 			MetaLevelFieldName:  {},
 			MetaLabelFieldName:  {ColorHlMagenta},
 			MetaCallerFieldName: {ColorCyan},
-			MsgFieldName:        {ColorBlue},
+			MsgFieldName:        {ColorHlBlue},
 			ErrFieldName:        {ColorRed},
 
 			metaKeysColorLevelDebugFieldName: {ColorMagenta},
@@ -225,6 +227,8 @@ func defaultMetaKeys() *metaKeys {
 			metaKeysColorLevelTraceLineFieldName: {ColorHlBgMagenta},
 
 			metaEndFieldName: {ColorHlCyan},
+
+			keysColorName: {ColorHlGreen},
 		},
 	}
 }
