@@ -151,6 +151,49 @@ func main() {
 }
 ```
 
+### SubLogger
+
+SubLogger support allows you to create a logger instance that inherits from the parent logger and can reset some `Option` when needed.
+For example, a scenario where a `LABEL` different from the parent Logger is used in a submodule.
+
+```go
+package main
+
+import (
+	"os"
+
+	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/level"
+)
+
+func main() {
+	logger := rainbowlog.New(
+		rainbowlog.WithDefault(),
+		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
+		rainbowlog.WithCallerMarshalFunc(nil),
+		rainbowlog.WithLevel(level.Info),
+		rainbowlog.WithLabels("ROOT"),
+	)
+
+	logger.Debug().Msg("Hello world!").Done()
+	logger.Info().Msg("Hello world!").Done()
+
+	subLogger := logger.SubLogger(
+		rainbowlog.WithLevel(level.Debug),
+		rainbowlog.WithLabels("SUBMODULE"),
+	)
+
+	subLogger.Debug().Msg("Hello world!").Done()
+	subLogger.Info().Msg("Hello world!").Done()
+}
+
+// Output:
+// {"_TIME_":"2024-02-21 11:28:02.150","_LEVEL_":"INFO","_LABEL_":"ROOT","message": "Hello world!"}
+// {"_TIME_":"2024-02-21 11:28:02.150","_LEVEL_":"DEBUG","_LABEL_":"SUBMODULE","message":"Hello world!"}
+// {"_TIME_":"2024-02-21 11:28:02.150","_LEVEL_":"INFO","_LABEL_":"SUBMODULE","message":"Hello world!"}
+
+```
+
 ### Modify time output format
 
 The default time format of RainbowLog is `2006-01-02 15:04:05.000`,
@@ -180,3 +223,40 @@ func main() {
 
 // Output:{"_TIME_":1708346689,"_LEVEL_":"INFO","_CALLER_":"main.go:16","message":"Hello world!"}
 ```
+### Hooks
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/level"
+)
+
+func main() {
+	var hook rainbowlog.HookFunc = func(r rainbowlog.Record, level level.Level, message string) {
+		fmt.Printf("hook: %s, %s\n", level.String(), message)
+	}
+	logger := rainbowlog.New(
+		rainbowlog.WithDefault(),
+		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
+		rainbowlog.WithCallerMarshalFunc(nil),
+		rainbowlog.AppendsHooks(hook),
+		rainbowlog.WithLevel(level.Info),
+	)
+
+	logger.Debug().Msg("Hello world!").Done()
+	logger.Info().Msg("Hello world!").Done()
+}
+
+// Output: 
+// hook: info, Hello world!
+// {"_TIME_":"2024-02-21 11:42:17.592","_LEVEL_":"INFO","message":"Hello world!"}
+```
+
+### More
+
+Of course, we also provide more features and functions, looking forward to your exploration and discovery!
