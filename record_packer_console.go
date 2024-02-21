@@ -222,6 +222,9 @@ func (j *ConsolePacker) createMeta() {
 			*j.meta = j.writerEncoderPair.enc.String(*j.meta, j.record.level.KeyFieldValue())
 			j.printRainbowEnd(j.meta, i, endI)
 		case MetaCallerFieldName:
+			if j.record.logger.callerMarshalFunc == nil {
+				continue
+			}
 			skip := j.callerSkipFrameCount + CallerSkipFrameCount + innerCallerSkipFrameCount
 			_, file, line, ok := runtime.Caller(skip)
 			if !ok {

@@ -159,19 +159,19 @@ func (r *LogRecord) fatalOrPanic() {
 // NOTICE: once this method is called, the *Record should be disposed.
 // Calling Done twice can have unexpected result.
 func (r *LogRecord) Done() {
-	for _, hook := range r.logger.hooks {
-		hook.RunHook(r, r.level, r.msg)
-	}
-	if r.doneFunc != nil {
-		defer r.doneFunc(r.msg)
-	}
-
 	// recycling
 	defer r.logger.recordPool.Put(r)
 	defer r.fatalOrPanic()
 
 	if r.strikeOrNot() {
 		return
+	}
+
+	for _, hook := range r.logger.hooks {
+		hook.RunHook(r, r.level, r.msg)
+	}
+	if r.doneFunc != nil {
+		defer r.doneFunc(r.msg)
 	}
 
 	for _, rp := range r.recordPackers {
