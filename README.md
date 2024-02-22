@@ -51,7 +51,7 @@ import (
 )
 
 func main() {
-	log.UseDefault()
+	log.UseRainbowDefault()
 
 	log.Logger.Info().Msg("Hello world!").Done()
 	log.Logger.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
@@ -68,8 +68,8 @@ Output:
 #### Use global logger by config file
 
 RainbowLog supports setting logger options based on configuration files.
-If you want to use a configuration file, you need to ensure that the configuration file contains Rainbow Log configuration items.
-Rainbow Log supports configuration files in three formats: `.yaml`|`.json`|`.toml`. For specific configuration templates, see the corresponding files in the [`config`](./config) package.
+If you want to use a configuration file, you need to ensure that the configuration file contains RainbowLog configuration items.
+RainbowLog supports configuration files in three formats: `.yaml`|`.json`|`.toml`. For specific configuration templates, see the corresponding files in the [`config`](./config) package.
 
 Assume that we have prepared a configuration file `rainbowlog.yaml` and placed it in the same directory as the execution file, then:
 
