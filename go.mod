@@ -1,11 +1,11 @@
 module github.com/rambollwong/rainbowlog
 
-go 1.22
+go 1.23
 
 require (
-	github.com/rambollwong/rainbowcat v0.0.0-20240221084545-2872994302b8
+	github.com/rambollwong/rainbowcat v0.0.0-20250206043332-9b571afe68ca
 	github.com/spf13/viper v1.17.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
