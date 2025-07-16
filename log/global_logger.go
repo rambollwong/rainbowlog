@@ -16,6 +16,10 @@ var (
 	DefaultConfigFileName = "rainbowlog.yaml"
 )
 
+func init() {
+	UseRainbowDefault()
+}
+
 // UseDefault will initial the global Logger by using default options.
 //
 //	This is equivalent to using the following options:
