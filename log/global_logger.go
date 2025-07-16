@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/level"
 )
 
 var (
@@ -80,4 +81,44 @@ func UseDefaultConfigFile(opts ...rainbowlog.Option) {
 			rainbowlog.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
 		}, opts...)...,
 	)
+}
+
+// Record create a new rainbowlog.Record with basic.
+func Record() rainbowlog.Record {
+	return Logger.Record()
+}
+
+// Level create a new rainbowlog.Record with the logger level given.
+func Level(le level.Level) rainbowlog.Record {
+	return Logger.Level(le)
+}
+
+// Debug create a new rainbowlog.Record with debug level setting.
+func Debug() rainbowlog.Record {
+	return Logger.Debug()
+}
+
+// Info create a new rainbowlog.Record with info level setting.
+func Info() rainbowlog.Record {
+	return Logger.Info()
+}
+
+// Warn create a new rainbowlog.Record with warn level setting.
+func Warn() rainbowlog.Record {
+	return Logger.Warn()
+}
+
+// Error create a new rainbowlog.Record with error level setting.
+func Error() rainbowlog.Record {
+	return Logger.Error()
+}
+
+// Fatal create a new rainbowlog.Record with fatal level setting.
+func Fatal() rainbowlog.Record {
+	return Logger.Fatal()
+}
+
+// Panic create a new rainbowlog.Record with panic level setting.
+func Panic() rainbowlog.Record {
+	return Logger.Panic()
 }
