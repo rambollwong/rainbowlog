@@ -14,6 +14,7 @@ LogFilePath = './log'           # the path of log files
 LogFileBaseName = 'rainbow.s.log' # the base name of log file
 MaxBackups = 10                 # max log file backups, if it is negative, the file rotating will be disabled
 FileSizeLimit = '100M'          # the max size of each log file, it is valid when MaxBackups is not negative
+Encoder = 'json'                # specify the log information format of the log file, 'txt' and 'json' supported
 
 [rainbowlog.TimeRollingFileConfig]
 Enable = false                  # enable time rolling file
@@ -21,3 +22,4 @@ LogFilePath = './log'           # the path of log files
 LogFileBaseName = 'rainbow.t.log' # the base name of log file
 MaxBackups = 7                  # max log file backups, if it is negative, the file rotating will be disabled
 RollingPeriod = 'DAY'           # the rolling time period for rotating log file, e.g. 'YEAR' or 'MONTH' or 'DAY' or 'HOUR' or 'MINUTE' or 'SECOND'
+Encoder = 'txt'                 # specify the log information format of the log file, 'txt' and 'json' supported
