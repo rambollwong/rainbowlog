@@ -154,32 +154,45 @@ func (l *Logger) initLogger() {
 // Returns the first error encountered during flushing, or nil if all flush operations succeed.
 func (l *Logger) Flush() (err error) {
 	type flushI interface{ Flush() error }
+	wg := sync.WaitGroup{}
+	flushRoutine := func(fw flushI) {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if e := fw.Flush(); e != nil {
+				err = e
+			}
+		}()
+	}
 	for _, writerEncoder := range l.writerEncoders {
 		switch w := writerEncoder.writer.(type) {
-		case levelWriterAdapter, *levelWriterAdapter, *syncWriter:
+		case levelWriterAdapter:
+			fw, ok := w.Writer.(flushI)
+			if ok {
+				flushRoutine(fw)
+			}
+		case *levelWriterAdapter:
+			fw, ok := w.Writer.(flushI)
+			if ok {
+				flushRoutine(fw)
+			}
+		case *syncWriter:
 			// Skip writers that don't need explicit flushing
 		case flushI:
 			// Flush writers that directly implement flushI
 			return w.Flush()
 		case multiLevelWriter:
 			// For multiLevelWriter, flush all underlying writers that support flushing
-			wg := sync.WaitGroup{}
 			for _, writer := range w.writers {
 				if fw, ok := writer.(flushI); ok {
-					wg.Add(1)
-					go func() {
-						defer wg.Done()
-						if e := fw.Flush(); e != nil {
-							err = e
-						}
-					}()
+					flushRoutine(fw)
 				}
 			}
-			wg.Wait()
 		default:
 			// Skip other writers
 		}
 	}
+	wg.Wait()
 	return err
 }
 

@@ -175,31 +175,21 @@ func (bw *BufferedWriter) Write(bz []byte) (n int, err error) {
 		available := bw.bufSize - bw.bufCurrent.Len()
 		if remaining > available {
 			// Current buffer cannot accommodate all remaining data, first fill the current buffer
-			n, err := bw.bufCurrent.Write(bz[written : written+available])
-			if err != nil {
-				return written + n, err
-			}
-			written += available
+			n, err = bw.bufCurrent.Write(bz[written : written+available])
+		} else {
+			// Remaining data can be completely written to the current buffer
+			n, err = bw.bufCurrent.Write(bz[written:])
+		}
+		written += n
+		if err != nil {
+			return written, err
+		}
 
-			// Switch buffer and asynchronously write the filled buffer
+		// If the current buffer is full, switch buffer and asynchronously write
+		if bw.bufCurrent.Len() >= bw.bufSize {
 			if err = bw.swapAndFlush(); err != nil {
 				return written, err
 			}
-		} else {
-			// Remaining data can be completely written to the current buffer
-			n, err := bw.bufCurrent.Write(bz[written:])
-			written += n
-			if err != nil {
-				return written, err
-			}
-
-			// If the current buffer is full, switch buffer and asynchronously write
-			if bw.bufCurrent.Len() >= bw.bufSize {
-				if err = bw.swapAndFlush(); err != nil {
-					return written, err
-				}
-			}
-			break
 		}
 	}
 
