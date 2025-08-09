@@ -327,6 +327,12 @@ logger := rainbowlog.New(
 
 Of course, we provide more features and capabilities, looking forward to your exploration and discovery!
 
+## Contact Us
+
+- Email: `ramboll.wong@hotmail.com`
+- Telegram Technical Discussion Group: [[Join Now]](https://t.me/+ovN79ozHG4c1YWNl)
+- Blog：[Ramboll's Blog](https://ramboll.wang)
+
 ## Support with a Donation
 
 If you like this project, feel free to buy the author a cup of lemonade ☕️. Your support is my motivation for continuous updates!

@@ -327,6 +327,12 @@ logger := rainbowlog.New(
 
 当然，我们还提供更多功能和特性，期待您的探索和发现！
 
+## 联系我们
+
+- 邮箱：`ramboll.wong@hotmail.com`
+- Telegram 技术交流群：[[点击加入]](https://t.me/+ovN79ozHG4c1YWNl)
+- 博客：[Ramboll's Blog](https://ramboll.wang)
+
 ## 打赏支持
 
 如果你喜欢这个项目，欢迎请作者喝杯柠檬水 ☕️，你的支持是我持续更新的动力！
