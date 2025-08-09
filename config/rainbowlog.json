@@ -13,7 +13,9 @@
       "logFileBaseName": "rainbow.s.log",
       "maxBackups": 10,
       "fileSizeLimit": "100M",
-      "encoder": "txt"
+      "encoder": "txt",
+      "useBufferedWriter": true,
+      "writerBufferSize": "4K"
     },
     "timeRollingFileConfig": {
       "enable": false,
@@ -21,7 +23,9 @@
       "logFileBaseName": "rainbow.t.log",
       "maxBackups": 7,
       "rollingPeriod": "DAY",
-      "encoder": "json"
+      "encoder": "json",
+      "useBufferedWriter": true,
+      "writerBufferSize": "4K"
     }
   }
 }

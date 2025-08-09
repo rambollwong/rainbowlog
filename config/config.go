@@ -22,21 +22,25 @@ type LoggerConfig struct {
 }
 
 type LoggerTimeRollingFileConfig struct {
-	Enable          bool                     `mapstructure:"enable" json:"enable" yaml:"enable"`
-	LogFilePath     string                   `mapstructure:"logFilePath" json:"logFilePath" yaml:"logFilePath"`
-	LogFileBaseName string                   `mapstructure:"logFileBaseName" json:"logFileBaseName" yaml:"logFileBaseName"`
-	MaxBackups      int                      `mapstructure:"maxBackups" json:"maxBackups" yaml:"maxBackups"`
-	RollingPeriod   filewriter.RollingPeriod `mapstructure:"rollingPeriod" json:"rollingPeriod" yaml:"rollingPeriod"`
-	Encoder         string                   `mapstructure:"encoder" json:"encoder" yaml:"encoder"`
+	Enable            bool                     `mapstructure:"enable" json:"enable" yaml:"enable"`
+	LogFilePath       string                   `mapstructure:"logFilePath" json:"logFilePath" yaml:"logFilePath"`
+	LogFileBaseName   string                   `mapstructure:"logFileBaseName" json:"logFileBaseName" yaml:"logFileBaseName"`
+	MaxBackups        int                      `mapstructure:"maxBackups" json:"maxBackups" yaml:"maxBackups"`
+	RollingPeriod     filewriter.RollingPeriod `mapstructure:"rollingPeriod" json:"rollingPeriod" yaml:"rollingPeriod"`
+	Encoder           string                   `mapstructure:"encoder" json:"encoder" yaml:"encoder"`
+	UseBufferedWriter bool                     `mapstructure:"useBufferedWriter" json:"useBufferedWriter" yaml:"useBufferedWriter"`
+	WriterBufferSize  string                   `mapstructure:"writerBufferSize" json:"writerBufferSize" yaml:"writerBufferSize"`
 }
 
 type LoggerSizeRollingFileConfig struct {
-	Enable          bool   `mapstructure:"enable" json:"enable" yaml:"enable"`
-	LogFilePath     string `mapstructure:"logFilePath" json:"logFilePath" yaml:"logFilePath"`
-	LogFileBaseName string `mapstructure:"logFileBaseName" json:"logFileBaseName" yaml:"logFileBaseName"`
-	MaxBackups      int    `mapstructure:"maxBackups" json:"maxBackups" yaml:"maxBackups"`
-	FileSizeLimit   string `mapstructure:"fileSizeLimit" json:"fileSizeLimit" yaml:"fileSizeLimit"`
-	Encoder         string `mapstructure:"encoder" json:"encoder" yaml:"encoder"`
+	Enable            bool   `mapstructure:"enable" json:"enable" yaml:"enable"`
+	LogFilePath       string `mapstructure:"logFilePath" json:"logFilePath" yaml:"logFilePath"`
+	LogFileBaseName   string `mapstructure:"logFileBaseName" json:"logFileBaseName" yaml:"logFileBaseName"`
+	MaxBackups        int    `mapstructure:"maxBackups" json:"maxBackups" yaml:"maxBackups"`
+	FileSizeLimit     string `mapstructure:"fileSizeLimit" json:"fileSizeLimit" yaml:"fileSizeLimit"`
+	Encoder           string `mapstructure:"encoder" json:"encoder" yaml:"encoder"`
+	UseBufferedWriter bool   `mapstructure:"useBufferedWriter" json:"useBufferedWriter" yaml:"useBufferedWriter"`
+	WriterBufferSize  string `mapstructure:"writerBufferSize" json:"writerBufferSize" yaml:"writerBufferSize"`
 }
 
 func DefaultLoggerConfig() LoggerConfig {
@@ -49,20 +53,24 @@ func DefaultLoggerConfig() LoggerConfig {
 		EnableRainbowConsole:  true,
 		TimeFormat:            "2006-01-02 15:04:05.000",
 		SizeRollingFileConfig: LoggerSizeRollingFileConfig{
-			Enable:          false,
-			LogFilePath:     "./log",
-			LogFileBaseName: "rainbow.log",
-			MaxBackups:      10,
-			FileSizeLimit:   "100M",
-			Encoder:         "json",
+			Enable:            false,
+			LogFilePath:       "./log",
+			LogFileBaseName:   "rainbow.log",
+			MaxBackups:        10,
+			FileSizeLimit:     "100M",
+			Encoder:           "json",
+			UseBufferedWriter: true,
+			WriterBufferSize:  "4K",
 		},
 		TimeRollingFileConfig: LoggerTimeRollingFileConfig{
-			Enable:          false,
-			LogFilePath:     "./log",
-			LogFileBaseName: "rainbow.log",
-			MaxBackups:      7,
-			RollingPeriod:   "DAY",
-			Encoder:         "json",
+			Enable:            false,
+			LogFilePath:       "./log",
+			LogFileBaseName:   "rainbow.log",
+			MaxBackups:        7,
+			RollingPeriod:     "DAY",
+			Encoder:           "json",
+			UseBufferedWriter: true,
+			WriterBufferSize:  "4K",
 		},
 	}
 }

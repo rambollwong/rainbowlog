@@ -52,10 +52,14 @@ func TestLoadLoggerConfigFromFile(t *testing.T) {
 		require.Equal(t, cfg.SizeRollingFileConfig.LogFileBaseName, cfg2.SizeRollingFileConfig.LogFileBaseName)
 		require.Equal(t, cfg.SizeRollingFileConfig.MaxBackups, cfg2.SizeRollingFileConfig.MaxBackups)
 		require.Equal(t, cfg.SizeRollingFileConfig.FileSizeLimit, cfg2.SizeRollingFileConfig.FileSizeLimit)
+		require.Equal(t, cfg.SizeRollingFileConfig.UseBufferedWriter, cfg2.SizeRollingFileConfig.UseBufferedWriter)
+		require.Equal(t, cfg.SizeRollingFileConfig.WriterBufferSize, cfg2.SizeRollingFileConfig.WriterBufferSize)
 		require.Equal(t, cfg.TimeRollingFileConfig.Enable, cfg2.TimeRollingFileConfig.Enable)
 		require.Equal(t, cfg.TimeRollingFileConfig.LogFilePath, cfg2.TimeRollingFileConfig.LogFilePath)
 		require.Equal(t, cfg.TimeRollingFileConfig.LogFileBaseName, cfg2.TimeRollingFileConfig.LogFileBaseName)
 		require.Equal(t, cfg.TimeRollingFileConfig.MaxBackups, cfg2.TimeRollingFileConfig.MaxBackups)
 		require.Equal(t, cfg.TimeRollingFileConfig.RollingPeriod, cfg2.TimeRollingFileConfig.RollingPeriod)
+		require.Equal(t, cfg.TimeRollingFileConfig.UseBufferedWriter, cfg2.TimeRollingFileConfig.UseBufferedWriter)
+		require.Equal(t, cfg.TimeRollingFileConfig.WriterBufferSize, cfg2.TimeRollingFileConfig.WriterBufferSize)
 	}
 }
