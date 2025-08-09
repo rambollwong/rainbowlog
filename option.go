@@ -175,38 +175,60 @@ func WithConfig(config config.LoggerConfig) Option {
 			logger.timeFormat = config.TimeFormat
 		}
 		if config.SizeRollingFileConfig.Enable {
-			fileSizeLimit, err := util.ParseToBytesSize(config.SizeRollingFileConfig.FileSizeLimit, 1024)
+			src := config.SizeRollingFileConfig
+			fileSizeLimit, err := util.ParseToBytesSize(src.FileSizeLimit, 1024)
 			if err != nil {
-				panic("wrong file size limit: " + config.SizeRollingFileConfig.FileSizeLimit)
+				panic("wrong file size limit: " + src.FileSizeLimit)
 			}
 			writer, err := filewriter.NewSizeRollingFileWriter(
-				config.SizeRollingFileConfig.LogFilePath,
-				config.SizeRollingFileConfig.LogFileBaseName,
-				config.SizeRollingFileConfig.MaxBackups,
+				src.LogFilePath,
+				src.LogFileBaseName,
+				src.MaxBackups,
 				fileSizeLimit,
 			)
 			if err != nil {
 				panic("error new size rolling file writer: " + err.Error())
 			}
-			encoder := GlobalEncoderParseFunc(config.SizeRollingFileConfig.Encoder)
+			encoder := GlobalEncoderParseFunc(src.Encoder)
+			var w LevelWriter
+			if src.UseBufferedWriter {
+				bufferSize, err := util.ParseToBytesSize(src.WriterBufferSize, 1024)
+				if err != nil {
+					panic("wrong buffer size: " + src.WriterBufferSize)
+				}
+				w = BufferedLevelWriter(writer, int(bufferSize))
+			} else {
+				w = LevelWriterAdapter(writer)
+			}
 			logger.writerEncoders = append(logger.writerEncoders, WriterEncoderPair{
-				writer: LevelWriterAdapter(writer),
+				writer: w,
 				enc:    encoder,
 			})
 		}
 		if config.TimeRollingFileConfig.Enable {
+			trc := config.TimeRollingFileConfig
 			writer, err := filewriter.NewTimeRollingFileWriter(
-				config.TimeRollingFileConfig.LogFilePath,
-				config.TimeRollingFileConfig.LogFileBaseName,
-				config.TimeRollingFileConfig.MaxBackups,
-				config.TimeRollingFileConfig.RollingPeriod,
+				trc.LogFilePath,
+				trc.LogFileBaseName,
+				trc.MaxBackups,
+				trc.RollingPeriod,
 			)
 			if err != nil {
 				panic("error new time rolling file writer: " + err.Error())
 			}
-			encoder := GlobalEncoderParseFunc(config.SizeRollingFileConfig.Encoder)
+			encoder := GlobalEncoderParseFunc(trc.Encoder)
+			var w LevelWriter
+			if trc.UseBufferedWriter {
+				bufferSize, err := util.ParseToBytesSize(trc.WriterBufferSize, 1024)
+				if err != nil {
+					panic("wrong buffer size: " + trc.WriterBufferSize)
+				}
+				w = BufferedLevelWriter(writer, int(bufferSize))
+			} else {
+				w = LevelWriterAdapter(writer)
+			}
 			logger.writerEncoders = append(logger.writerEncoders, WriterEncoderPair{
-				writer: LevelWriterAdapter(writer),
+				writer: w,
 				enc:    encoder,
 			})
 		}

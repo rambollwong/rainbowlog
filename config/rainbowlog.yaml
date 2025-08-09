@@ -13,7 +13,9 @@ rainbowlog:
     logFileBaseName: rainbow.s.log  # the base name of log file
     maxBackups: 10                # max log file backups, if it is negative, the file rotating will be disabled
     fileSizeLimit: 100M           # the max size of each log file, it is valid when MaxBackups is not negative
-    encoder: json                  # specify the log information format of the log file, 'txt' and 'json' supported.
+    encoder: json                 # specify the log information format of the log file, 'txt' and 'json' supported.
+    useBufferedWriter: true       # whether use buffered writer
+    writerBufferSize: 4K          # the buffer size of buffered writer
   timeRollingFileConfig:
     enable: false                 # enable time rolling file
     logFilePath: ./log            # the path of log files
@@ -21,3 +23,5 @@ rainbowlog:
     maxBackups: 7                 # max log file backups, if it is negative, the file rotating will be disabled
     rollingPeriod: DAY            # the rolling time period for rotating log file, e.g. 'YEAR' or 'MONTH' or 'DAY' or 'HOUR' or 'MINUTE' or 'SECOND'
     encoder: txt                  # specify the log information format of the log file, 'txt' and 'json' supported.
+    useBufferedWriter: true       # whether use buffered writer
+    writerBufferSize: 4K          # the buffer size of buffered writer
