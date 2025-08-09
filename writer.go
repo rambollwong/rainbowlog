@@ -268,11 +268,12 @@ func (bw *BufferedWriter) swapAndFlush() error {
 // flushCurrent flushes the data in the current buffer.
 // If the current buffer is empty, no operation is performed.
 func (bw *BufferedWriter) flushCurrent() error {
+	bw.wg.Wait()
+
 	if bw.bufCurrent.Len() == 0 {
 		return nil
 	}
-	defer bw.wg.Wait()
-	return bw.swapAndFlush()
+	return bw.flushBuffer(bw.bufCurrent)
 }
 
 // flushBuffer writes the data in the specified buffer to the underlying writer and resets the buffer.
