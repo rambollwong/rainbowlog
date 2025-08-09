@@ -2,42 +2,42 @@
 
 ![](https://ramboll.wang/img/RainbowLog_LOGO_SD.png)
 
-[[中文]](./README_CN.md)
+[[English](./README.md)
 
-Simple, configurable, structured Go logging library.
+简单、可配置、结构化的 Go 日志库。
 
-RainbowLog's API is designed to provide an excellent developer experience and outstanding performance.
-Its unique chained API allows RainbowLog to write JSON log events by avoiding allocations and reflection.
+RainbowLog 的 API 设计旨在提供出色的开发者体验和卓越的性能。
+其独特的链式 API 允许 RainbowLog 通过避免分配和反射来写入 JSON 日志事件。
 
-To keep the codebase and API simple, RainbowLog focuses only on efficient structured logging.
-Pretty log output on the console can be achieved through the provided (but less efficient) `rainbowlog.ConsolePacker`.
+为了保持代码库和 API 的简洁性，RainbowLog 仅专注于高效的结构化日志记录。
+通过提供的（但效率较低的）`rainbowlog.ConsolePacker` 可以实现控制台上的漂亮日志输出。
 
 ![pretty.png](./pretty.png)
 
-## Features
+## 特性
 
-- **High Performance**: Zero memory allocation, no reflection logging
-- **Structured Logging**: Supports JSON and text format log output
-- **Flexible Configuration**: Supports multiple configuration methods (code configuration, configuration files, etc.)
-- **Multi-output Support**: Can output to multiple targets simultaneously (files, standard output, etc.)
-- **Log Level Control**: Supports Debug, Info, Warn, Error, Fatal, Panic levels
-- **Modular Labels**: Supports adding labels to different modules for easy log classification
-- **Hook Mechanism**: Supports custom hook functions to handle log events
-- **Sub Logger**: Supports creating sub loggers that inherit parent configuration
-- **Error Stack Tracing**: Supports error stack information output
-- **Caller Information**: Supports recording the file and line number where the log was generated
+- **高性能**: 零内存分配，无反射的日志记录
+- **结构化日志**: 支持 JSON 和文本格式的日志输出
+- **灵活配置**: 支持多种配置方式（代码配置、配置文件等）
+- **多输出支持**: 可同时输出到多个目标（文件、标准输出等）
+- **日志级别控制**: 支持 Debug、Info、Warn、Error、Fatal、Panic 等级别
+- **模块化标签**: 支持为不同模块添加标签便于日志分类
+- **钩子机制**: 支持自定义钩子函数处理日志事件
+- **子日志记录器**: 支持创建继承父级配置的子日志记录器
+- **错误堆栈跟踪**: 支持错误堆栈信息输出
+- **Caller 信息**: 支持记录日志产生的文件和行号
 
-## Installation
+## 安装
 
 ```shell
 go get -u github.com/rambollwong/rainbowlog
 ```
 
-## Quick Start
+## 快速开始
 
-### Using Global Logger
+### 使用Global Logger
 
-#### Global Logger with Default Options
+#### 使用默认选项的Global Logger
 
 ```go
 package main
@@ -55,9 +55,9 @@ func main() {
 // Output: {"_TIME_":"2024-02-19 19:50:09.008","_LEVEL_":"INFO","_CALLER_":"/path/to/main.go:10","message":"Hello world!"}
 ```
 
-> Note: By default, logs are written to `os.Stderr`
+> 注意: 默认情况下，日志写入到 `os.Stderr`
 
-#### Global Logger with Rainbow Default Options
+#### 使用 Rainbow 默认选项的Global Logger
 
 ```go
 package main
@@ -79,17 +79,17 @@ func main() {
 }
 ```
 
-Output:
+输出:
 
 ![pretty.png](./pretty.png)
 
-#### Global Logger with Configuration File
+#### 使用配置文件的Global Logger
 
-RainbowLog supports setting logger options based on configuration files.
-To use a configuration file, you need to ensure that the configuration file contains RainbowLog configuration items.
-RainbowLog supports three formats of configuration files: `.yaml`|`.json`|`.toml`. For specific configuration templates, please refer to the corresponding files in the [`config`](./config) package.
+RainbowLog 支持基于配置文件设置日志记录器选项。
+如果要使用配置文件，您需要确保配置文件包含 RainbowLog 配置项。
+RainbowLog 支持三种格式的配置文件：`.yaml`|`.json`|`.toml`。有关具体配置模板，请参见 [`config`](./config) 包中的相应文件。
 
-Assuming we have prepared a configuration file `rainbowlog.yaml` and placed it in the same directory as the executable file:
+假设我们已准备了一个配置文件 `rainbowlog.yaml` 并将其放置在与执行文件相同的目录中，那么：
 
 ```go
 package main
@@ -111,36 +111,36 @@ func main() {
 }
 ```
 
-To use `.json` or `.toml` type configuration files, just modify `log.DefaultConfigFileName`, for example:
+如果要使用 `.json` 或 `.toml` 类型的配置文件，只需修改 `log.DefaultConfigFileName`，例如：
 
 ```go
 log.DefaultConfigFileName = "rainbowlog.json"
 ```
 
-Or
+或者
 
 ```go
 log.DefaultConfigFileName = "rainbowlog.toml"
 ```
 
-If you also want to specify the directory where the configuration file is located, just modify `log.DefaultConfigFilePath`:
+如果您还想指定配置文件所在的目录，只需修改 `log.DefaultConfigFilePath`：
 
 ```go
 log.DefaultConfigFilePath = "/path/of/config/files"
 ```
 
-> Note: Modifying `log.DefaultConfigFileName` and `log.DefaultConfigFilePath` needs to be executed before `log.UseDefaultConfigFile()`, otherwise it will not take effect.
+> 注意: 修改 `log.DefaultConfigFileName` 和 `log.DefaultConfigFilePath` 需要在 `log.UseDefaultConfigFile()` 之前执行，否则不会生效。
 
-#### Global Logger with Custom Options
+#### 使用自定义选项的Global Logger
 
-If you want to use custom options for the global logger, we provide the `log.UseCustomOptions(opts ...Option)` API to achieve this.
-Supported `Option` details can be found in [option.go](./option.go).
+如果您想为全局日志记录器使用自定义选项，我们保留了 `log.UseCustomOptions(opts ...Option)` API 来实现。
+支持的 `Option` 详见 [option.go](./option.go)。
 
-### Custom Logger
+### 自定义Logger
 
-If you don't want to use the Global Logger, you can initialize a `Logger` instance through the `New` method.
-The `New` method accepts `Option` parameters.
-Supported `Option` details can be found in [option.go](./option.go).
+如果您不想使用Global Logger，可以通过 `New` 方法初始化一个 `Logger` 实例。
+`New` 方法接收 `Option` 参数。
+支持的 `Option` 详见 [option.go](./option.go)。
 
 ```go
 package main
@@ -171,8 +171,8 @@ func main() {
 
 ### SubLogger
 
-SubLogger support allows you to create an instance that inherits from the parent logger and reset certain `Option` when needed.
-For example, in a submodule scenario where a different `LABEL` is used than the parent Logger.
+SubLogger支持允许您创建一个继承自父日志记录器的实例，并在需要时重置某些 `Option`。
+例如，在子模块中使用与父Logger不同的 `LABEL` 的场景。
 
 ```go
 package main
@@ -212,13 +212,13 @@ func main() {
 
 ```
 
-### Modifying Time Output Format
+### 修改时间输出格式
 
-RainbowLog's default time format is `2006-01-02 15:04:05.000`,
-you can modify this format through the `WithTimeFormat(timeFormat string)` option,
-the format can be a string that conforms to golang time format rules,
-or it can be `UNIX` or `UNIXMS` or `UNIXMICRO` or `UNIXNANO`,
-which represent the return values of `Unix()` or `UnixMilli()` or `UnixMicro()` or `UnixNano()` respectively, used to output `time.Time`.
+RainbowLog 的默认时间格式是 `2006-01-02 15:04:05.000`，
+您可以通过 `WithTimeFormat(timeFormat string)` 选项修改此格式，
+格式可以是符合 golang 时间格式规则的字符串，
+也可以是 `UNIX` 或 `UNIXMS` 或 `UNIXMICRO` 或 `UNIXNANO`，
+它们分别代表 `Unix()` 或 `UnixMilli()` 或 `UnixMicro()` 或 `UnixNano()` 的返回值，用于输出 `time.Time`。
 
 ```go
 package main
@@ -276,11 +276,11 @@ func main() {
 // {"_TIME_":"2024-02-21 11:42:17.592","_LEVEL_":"INFO","message":"Hello world!"}
 ```
 
-### Advanced Usage
+### 高级用法
 
 #### BufferedWriter
 
-RainbowLog provides BufferedWriter functionality, which can significantly improve log writing performance:
+RainbowLog 提供了BufferedWriter功能，可以显著提高日志写入性能：
 
 ```go
 bufferedWriter := rainbowlog.BufferedWriter(os.Stdout, 4096)
@@ -292,7 +292,7 @@ logger := rainbowlog.New(
 
 #### SyncWriter
 
-For non-thread-safe Writers, you can use SyncWriter wrapper:
+对于非线程安全的Writer，可以使用SyncWriter包装：
 
 ```go
 syncWriter := rainbowlog.SyncWriter(os.Stdout)
@@ -302,11 +302,11 @@ logger := rainbowlog.New(
 )
 ```
 
-**Note: POSIX and Windows operating systems are inherently write-safe, no need to wrap with SyncWriter!**
+**注意：POSIX 和 Windows 操作系统本身就是写入安全的，无需使用SyncWriter来包装！**
 
 #### MultiWriter
 
-Supports writing to multiple targets simultaneously:
+支持同时写入多个目标：
 
 ```go
 multiWriter := rainbowlog.MultiLevelWriter(os.Stdout, fileWriter)
@@ -316,25 +316,25 @@ logger := rainbowlog.New(
 )
 ```
 
-### Performance Optimization Recommendations
+### 性能优化建议
 
-1. **Use Buffered Writer**: For frequent log writing operations, using a buffered writer can significantly improve performance
-2. **Set Log Levels Appropriately**: Appropriately increase log levels in production environments to avoid too many debug logs affecting performance
-3. **Avoid Recording Too Much Information in Hot Paths**: Try to reduce the content and frequency of log recording on critical performance paths
-4. **Use Object Pool**: RainbowLog uses object pools internally to reduce memory allocation, ensure proper use of the `Done()` method to release record objects
+1. **使用缓冲写入器**: 对于频繁的日志写入操作，使用缓冲写入器可以显著提高性能
+2. **合理设置日志级别**: 在生产环境中适当提高日志级别，避免过多的调试日志影响性能
+3. **避免在热路径中记录过多信息**: 在关键性能路径上尽量减少日志记录的内容和频率
+4. **使用对象池**: RainbowLog 内部使用对象池来减少内存分配，确保正确使用 `Done()` 方法释放记录对象
 
-### More
+### 更多
 
-Of course, we provide more features and capabilities, looking forward to your exploration and discovery!
+当然，我们还提供更多功能和特性，期待您的探索和发现！
 
-## Support with a Donation
+## 打赏支持
 
-If you like this project, feel free to buy the author a cup of lemonade ☕️. Your support is my motivation for continuous updates!
+如果你喜欢这个项目，欢迎请作者喝杯柠檬水 ☕️，你的支持是我持续更新的动力！
 
-- WeChat Pay:
+- 微信支付：
 
 <img src="https://ramboll.wang/img/wechat_pay.jpg" alt="WeChat Pay" width="200"/>
 
-- Alipay:
+- 支付宝：
 
 <img src="https://ramboll.wang/img/ali_pay.jpg" alt="Alipay" width="200"/>
