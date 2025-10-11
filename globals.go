@@ -3,8 +3,10 @@ package rainbowlog
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/rambollwong/rainbowlog/level"
@@ -101,6 +103,16 @@ var (
 
 	// GlobalCallerMarshalFunc allows customization of global caller marshaling.
 	GlobalCallerMarshalFunc CallerMarshalFunc = func(file string, line int) string {
+		// Get current working directory and project prefix (only once)
+		prefix := getProjectPrefix()
+		if prefix != "" && strings.HasPrefix(file, prefix) {
+			// Remove prefix to get relative path
+			relPath := file[len(prefix):]
+			// Remove leading separator if present
+			relPath = strings.TrimPrefix(relPath, string(filepath.Separator))
+			return relPath + ":" + strconv.Itoa(line)
+		}
+		// If relative path is not available or not ideal, fallback to default format
 		return file + ":" + strconv.Itoa(line)
 	}
 
@@ -132,6 +144,25 @@ var (
 		}
 	}
 )
+
+// Project prefix cache
+var (
+	projectPrefixCache string
+	prefixOnce         sync.Once
+)
+
+// getProjectPrefix gets project prefix path, executes only once
+func getProjectPrefix() string {
+	prefixOnce.Do(func() {
+		// Get current working directory
+		wd, _ := os.Getwd()
+		if wd != "" {
+			// Usually the project prefix is the working directory plus separator
+			projectPrefixCache = wd + string(filepath.Separator)
+		}
+	})
+	return projectPrefixCache
+}
 
 //////////////
 /// Colors ///
