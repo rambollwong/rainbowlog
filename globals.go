@@ -3,7 +3,6 @@ package rainbowlog
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -102,19 +101,7 @@ var (
 	CallerSkipFrameCount = 0
 
 	// GlobalCallerMarshalFunc allows customization of global caller marshaling.
-	GlobalCallerMarshalFunc CallerMarshalFunc = func(file string, line int) string {
-		// Get current working directory and project prefix (only once)
-		prefix := getProjectPrefix()
-		if prefix != "" && strings.HasPrefix(file, prefix) {
-			// Remove prefix to get relative path
-			relPath := file[len(prefix):]
-			// Remove leading separator if present
-			relPath = strings.TrimPrefix(relPath, string(filepath.Separator))
-			return relPath + ":" + strconv.Itoa(line)
-		}
-		// If relative path is not available or not ideal, fallback to default format
-		return file + ":" + strconv.Itoa(line)
-	}
+	GlobalCallerMarshalFunc CallerMarshalFunc = LongCallerMarshalFunc
 
 	// GlobalErrorMarshalFunc allows customization of global error marshaling.
 	GlobalErrorMarshalFunc ErrorMarshalFunc = func(err error) string {
@@ -143,25 +130,54 @@ var (
 			panic("unsupported encoder: " + encoder)
 		}
 	}
+
+	shortCallerMap   = make(map[string]string) // fullCaller => shortCaller
+	shortCallerMapMu sync.RWMutex
 )
 
-// Project prefix cache
-var (
-	projectPrefixCache string
-	prefixOnce         sync.Once
-)
+// LongCallerMarshalFunc is the default caller marshal function which returns the full file path with line number.
+func LongCallerMarshalFunc(file string, line int) string {
+	return file + ":" + strconv.Itoa(line)
+}
 
-// getProjectPrefix gets project prefix path, executes only once
-func getProjectPrefix() string {
-	prefixOnce.Do(func() {
-		// Get current working directory
-		wd, _ := os.Getwd()
-		if wd != "" {
-			// Usually the project prefix is the working directory plus separator
-			projectPrefixCache = wd + string(filepath.Separator)
+// NewShortCallerMarshalFunc creates a caller marshal function that returns a shortened file path with line number.
+// It truncates the file path based on the provided callerTruncationIdentifier to make it more readable.
+// The shortened paths are cached in a map for better performance.
+func NewShortCallerMarshalFunc(callerTruncationIdentifier string) CallerMarshalFunc {
+	return func(file string, line int) string {
+		// Try to get the shortened caller from cache first
+		shortCallerMapMu.RLock()
+		short, ok := shortCallerMap[file]
+		shortCallerMapMu.RUnlock()
+		if ok {
+			return short + ":" + strconv.Itoa(line)
 		}
-	})
-	return projectPrefixCache
+
+		// Ensure the truncation identifier ends with "/"
+		if !strings.HasSuffix(callerTruncationIdentifier, "/") {
+			callerTruncationIdentifier += "/"
+		}
+
+		// Find the truncation index and create shortened file path
+		idx := strings.Index(file, callerTruncationIdentifier)
+		if idx == -1 {
+			// If identifier not found, use only the file name
+			short = file[strings.LastIndex(file, "/")+1:]
+		} else {
+			// If identifier found, truncate the path from that point
+			short = file[idx+len(callerTruncationIdentifier):]
+		}
+
+		// Store the shortened caller in cache
+		shortCallerMapMu.Lock()
+		_, ok = shortCallerMap[file]
+		if !ok {
+			shortCallerMap[file] = short
+		}
+		shortCallerMapMu.Unlock()
+
+		return short + ":" + strconv.Itoa(line)
+	}
 }
 
 //////////////
