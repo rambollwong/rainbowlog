@@ -151,11 +151,25 @@ func NewBufferedWriter(w io.Writer, bufSize int) *BufferedWriter {
 	return bw
 }
 
-// BufferedLevelWriter creates a new LevelWriter that wraps the provided io.Writer with buffering capabilities.
-// It uses the BufferedWriter to buffer writes and flushes them asynchronously for improved performance.
+// bufferedLevelWriter adapts a BufferedWriter to the LevelWriter interface.
+// By embedding *BufferedWriter, it promotes Write, Flush, and Close methods
+// so that callers can flush or close the underlying buffer via type assertion.
+type bufferedLevelWriter struct {
+	*BufferedWriter
+}
+
+// WriteLevel implements the LevelWriter interface by delegating to the
+// embedded BufferedWriter's Write method, ignoring the log level.
+func (b *bufferedLevelWriter) WriteLevel(_ level.Level, bz []byte) (n int, err error) {
+	return b.Write(bz)
+}
+
+// BufferedLevelWriter creates a new LevelWriter that wraps the provided io.Writer
+// with buffering capabilities. It uses a BufferedWriter internally to buffer writes
+// and flushes them asynchronously for improved performance.
 // The bufSize parameter specifies the size of each internal buffer.
 func BufferedLevelWriter(w io.Writer, bufSize int) LevelWriter {
-	return LevelWriterAdapter(NewBufferedWriter(w, bufSize))
+	return &bufferedLevelWriter{BufferedWriter: NewBufferedWriter(w, bufSize)}
 }
 
 // Write implements the io.Writer interface, writing data to the buffer.

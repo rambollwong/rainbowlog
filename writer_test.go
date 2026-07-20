@@ -39,6 +39,8 @@ func TestBufferedWriter(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 5, n)
 
+		bw.wg.Wait() // Wait for the async flush goroutine to complete
+
 		// Data should be automatically flushed
 		assert.Equal(t, "hello", buf.String())
 	})
