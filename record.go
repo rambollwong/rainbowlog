@@ -615,7 +615,6 @@ func (n *NilRecord) UseIntDur() Record {
 }
 
 func (n *NilRecord) Reset() {
-	return
 }
 
 func (n *NilRecord) Discard() Record {
@@ -623,7 +622,6 @@ func (n *NilRecord) Discard() Record {
 }
 
 func (n *NilRecord) Done() {
-	return
 }
 
 func (n *NilRecord) Msg(msg string) Record {

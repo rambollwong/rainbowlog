@@ -22,10 +22,8 @@ func (j *ConsolePacker) printCall(consoleColorsKey string, call func(j *ConsoleP
 	// key color printing
 	if j.consoleColor {
 		cs = j.record.logger.metaKeys.ConsoleColors(consoleColorsKey)
-		if cs != nil {
-			for _, c := range cs {
-				*j.raw = colorStart(*j.raw, c)
-			}
+		for _, c := range cs {
+			*j.raw = colorStart(*j.raw, c)
 		}
 	}
 	// field print
@@ -59,58 +57,44 @@ func (j *ConsolePacker) printMetaLevelStart(dst *[]byte) int {
 		switch j.record.level {
 		case level.Debug:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelDebugFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Info:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelInfoFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Warn:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelWarnFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Error:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelErrorFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Panic:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelPanicFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Fatal:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelFatalFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		case level.Trace:
 			cs := j.record.logger.metaKeys.ConsoleColors(metaKeysColorLevelTraceFieldName)
-			if cs != nil {
-				for _, c := range cs {
-					*dst = colorStart(*dst, c)
-				}
+			for _, c := range cs {
+				*dst = colorStart(*dst, c)
 			}
 			return len(cs)
 		default:
