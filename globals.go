@@ -144,6 +144,11 @@ func LongCallerMarshalFunc(file string, line int) string {
 // It truncates the file path based on the provided callerTruncationIdentifier to make it more readable.
 // The shortened paths are cached in a map for better performance.
 func NewShortCallerMarshalFunc(callerTruncationIdentifier string) CallerMarshalFunc {
+	// Ensure the truncation identifier ends with "/"
+	if !strings.HasSuffix(callerTruncationIdentifier, "/") {
+		callerTruncationIdentifier += "/"
+	}
+
 	return func(file string, line int) string {
 		// Try to get the shortened caller from cache first
 		shortCallerMapMu.RLock()
@@ -151,11 +156,6 @@ func NewShortCallerMarshalFunc(callerTruncationIdentifier string) CallerMarshalF
 		shortCallerMapMu.RUnlock()
 		if ok {
 			return short + ":" + strconv.Itoa(line)
-		}
-
-		// Ensure the truncation identifier ends with "/"
-		if !strings.HasSuffix(callerTruncationIdentifier, "/") {
-			callerTruncationIdentifier += "/"
 		}
 
 		// Find the truncation index and create shortened file path
