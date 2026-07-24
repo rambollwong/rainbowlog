@@ -72,10 +72,12 @@ func New(opts ...Option) *Logger {
 // SubLogger creates a new *Logger that inherit from parent logger.
 // Optional options for sub logger also be supported.
 func (l *Logger) SubLogger(opts ...Option) *Logger {
+	weps := make([]WriterEncoderPair, len(l.writerEncoders))
+	copy(weps, l.writerEncoders)
 	logger := &Logger{
 		level:                 l.level,
 		label:                 l.label,
-		writerEncoders:        l.writerEncoders,
+		writerEncoders:        weps,
 		stack:                 l.stack,
 		metaKeys:              l.metaKeys.Clone(),
 		consolePrint:          l.consolePrint,

@@ -1,6 +1,6 @@
 module github.com/rambollwong/rainbowlog
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/rambollwong/rainbowcat v0.0.0-20250206043332-9b571afe68ca
