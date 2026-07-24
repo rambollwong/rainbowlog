@@ -12,6 +12,7 @@ const (
 	TimeFormatUnix      = "UNIX"
 	TimeFormatUnixMs    = "UNIXMS"
 	TimeFormatUnixMicro = "UNIXMICRO"
+	TimeFormatUnixNano  = "UNIXNANO"
 )
 
 var noEscapeTable = [256]bool{}

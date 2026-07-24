@@ -19,6 +19,8 @@ func (j JsonEncoder) Time(dst []byte, format string, t time.Time) []byte {
 		return j.Int64(dst, t.UnixNano()/1000000)
 	case TimeFormatUnixMicro:
 		return j.Int64(dst, t.UnixNano()/1000)
+	case TimeFormatUnixNano:
+		return j.Int64(dst, t.UnixNano())
 	default:
 		dst = j.DoubleQuote(dst)
 		dst = t.AppendFormat(dst, format)
