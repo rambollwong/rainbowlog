@@ -1,6 +1,6 @@
 module github.com/rambollwong/rainbowlog
 
-go 1.23
+go 1.25.0
 
 require (
 	github.com/rambollwong/rainbowcat v0.0.0-20250206043332-9b571afe68ca
@@ -26,6 +26,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
+	golang.org/x/sync v0.20.0
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

@@ -6,10 +6,10 @@ package rainbowlog
 
 import (
 	"os"
-	"sync"
 
 	"github.com/rambollwong/rainbowlog/internal/encoder"
 	"github.com/rambollwong/rainbowlog/level"
+	"golang.org/x/sync/errgroup"
 )
 
 // WriterEncoderPair wraps a writer and an encoder.
@@ -148,52 +148,43 @@ func (l *Logger) initLogger() {
 	l.recordPool = newRecordPool(l.createRecord)
 }
 
+type flushI interface{ Flush() error }
+
 // Flush forces any buffered data to be written out to all writers that implement the Flush() method.
 // It iterates through all the writer-encoder pairs and checks if the writer supports flushing.
 // For multiLevelWriter, it recursively flushes all underlying writers that support flushing.
 // Returns the first error encountered during flushing, or nil if all flush operations succeed.
 func (l *Logger) Flush() (err error) {
-	type flushI interface{ Flush() error }
-	wg := sync.WaitGroup{}
-	flushRoutine := func(fw flushI) {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			if e := fw.Flush(); e != nil {
-				err = e
-			}
-		}()
-	}
+	eg := errgroup.Group{}
 	for _, writerEncoder := range l.writerEncoders {
 		switch w := writerEncoder.writer.(type) {
 		case levelWriterAdapter:
 			fw, ok := w.Writer.(flushI)
 			if ok {
-				flushRoutine(fw)
+				eg.Go(fw.Flush)
 			}
 		case *levelWriterAdapter:
 			fw, ok := w.Writer.(flushI)
 			if ok {
-				flushRoutine(fw)
+				eg.Go(fw.Flush)
 			}
 		case *syncWriter:
 			// Skip writers that don't need explicit flushing
 		case flushI:
 			// Flush writers that directly implement flushI
-			return w.Flush()
+			eg.Go(w.Flush)
 		case multiLevelWriter:
 			// For multiLevelWriter, flush all underlying writers that support flushing
 			for _, writer := range w.writers {
 				if fw, ok := writer.(flushI); ok {
-					flushRoutine(fw)
+					eg.Go(fw.Flush)
 				}
 			}
 		default:
 			// Skip other writers
 		}
 	}
-	wg.Wait()
-	return err
+	return eg.Wait()
 }
 
 // Record create a new Record with basic.
