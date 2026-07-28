@@ -15,6 +15,8 @@ var _ recordPacker = (*ConsolePacker)(nil)
 type ConsolePacker struct {
 	RecordPackerForWriter
 	consoleColor bool
+
+	defaultMetaKeys *metaKeys
 }
 
 func (j *ConsolePacker) printCall(consoleColorsKey string, call func(j *ConsolePacker)) {
@@ -173,10 +175,6 @@ func (j *ConsolePacker) createMeta() {
 	j.meta = bytesPool.Get()
 	// begin
 	*j.meta = j.writerEncoderPair.enc.BeginMarker(*j.meta)
-	if j.record.logger.metaKeys == nil {
-		// if meta keys unset, use default
-		j.record.logger.metaKeys = defaultMetaKeys()
-	}
 	// range meta keys
 	for i, s := range j.record.logger.metaKeys.Keys() {
 		switch s {

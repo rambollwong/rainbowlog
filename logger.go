@@ -50,7 +50,7 @@ func createLogger() *Logger {
 		label:                 "",
 		writerEncoders:        nil,
 		stack:                 false,
-		metaKeys:              emptyMetaKes(),
+		metaKeys:              emptyMetaKeys(),
 		consolePrint:          false,
 		consoleColor:          false,
 		levelFieldMarshalFunc: GlobalLevelFieldMarshalFunc,
@@ -71,6 +71,10 @@ func New(opts ...Option) *Logger {
 	}
 	// init logger
 	logger.initLogger()
+	// set default meta keys
+	if logger.consolePrint && logger.metaKeys.IsEmpty() {
+		logger.metaKeys = defaultMetaKeys()
+	}
 	return logger
 }
 

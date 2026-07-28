@@ -5,7 +5,6 @@ import (
 	"net"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/rambollwong/rainbowlog/level"
@@ -72,7 +71,6 @@ type Record interface {
 // It is finalized by the Done method.
 // Done method also writes the encoded bytes to the writer.
 type LogRecord struct {
-	mu            sync.Mutex
 	recordPackers []recordPacker
 	level         level.Level
 	label         string

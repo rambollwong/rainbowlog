@@ -5,7 +5,7 @@ type metaKeys struct {
 	consoleColors map[string][]int
 }
 
-func emptyMetaKes() *metaKeys {
+func emptyMetaKeys() *metaKeys {
 	return &metaKeys{keys: []string{}, consoleColors: map[string][]int{}}
 }
 
@@ -42,10 +42,14 @@ func (m *metaKeys) Clone() *metaKeys {
 	if m == nil {
 		return nil
 	}
-	res := emptyMetaKes()
+	res := emptyMetaKeys()
 	res.SetKeys(m.keys)
 	for s, ints := range m.consoleColors {
 		res.SetKeyColors(s, ints)
 	}
 	return res
+}
+
+func (m *metaKeys) IsEmpty() bool {
+	return m == nil || len(m.keys) == 0
 }
