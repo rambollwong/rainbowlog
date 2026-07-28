@@ -2,6 +2,7 @@ package rainbowlog
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -80,33 +81,25 @@ type multiLevelWriter struct {
 // Write implements the io.Writer interface by writing to all underlying writers.
 // It returns an error if any of the writers fails or performs a short write.
 func (t multiLevelWriter) Write(bz []byte) (n int, err error) {
+	var errs []error
 	for _, writer := range t.writers {
 		n, err = writer.Write(bz)
 		if err != nil {
-			return
+			errs = append(errs, err)
+			continue
 		}
 		if n != len(bz) {
 			err = io.ErrShortWrite
-			return
+			continue
 		}
 	}
-	return
+	return n, errors.Join(errs...)
 }
 
 // WriteLevel implements the LevelWriter interface by writing to all underlying writers.
 // It returns an error if any of the writers fails or performs a short write.
 func (t multiLevelWriter) WriteLevel(lv level.Level, bz []byte) (n int, err error) {
-	for _, writer := range t.writers {
-		n, err = writer.WriteLevel(lv, bz)
-		if err != nil {
-			return
-		}
-		if n != len(bz) {
-			err = io.ErrShortWrite
-			return
-		}
-	}
-	return
+	return t.Write(bz)
 }
 
 // MultiLevelWriter creates a writer that duplicates its writes to all the
