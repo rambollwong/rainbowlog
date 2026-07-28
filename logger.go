@@ -217,6 +217,13 @@ func (l *Logger) Record() Record {
 	}
 	r := l.recordPool.Get()
 	r.WithLabels(l.label)
+
+	// set default useIntDur and stack
+	lr, ok := r.(*LogRecord)
+	if ok {
+		lr.useIntDur = GlobalDurationValueUseInt
+		lr.stack = l.stack
+	}
 	return r
 }
 
