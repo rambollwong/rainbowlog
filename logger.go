@@ -37,6 +37,11 @@ type Logger struct {
 
 	// each Logger instance has an independent *Record pool.
 	recordPool *recordPool
+
+	// pre-built encoders to avoid per-record creation in the pool's New function.
+	// Index-aligned with writerEncoders; nil for writers that use a non-text encoder.
+	preBuiltEncoders       []Encoder
+	preBuiltConsoleEncoder Encoder
 }
 
 func createLogger() *Logger {
@@ -117,7 +122,7 @@ func (l *Logger) createRecord() Record {
 				raw:                  bytesPool.Get(),
 				callerSkipFrameCount: 0,
 				writerEncoderPair: &WriterEncoderPair{
-					enc:    NewTextEncoder(l.metaKeys.Keys()...),
+					enc:    l.preBuiltConsoleEncoder,
 					writer: levelWriterAdapter{Writer: os.Stdout},
 				},
 			},
@@ -128,11 +133,10 @@ func (l *Logger) createRecord() Record {
 	}
 	for i, wep := range l.writerEncoders {
 		var enc Encoder
-		switch tmp := wep.enc.(type) {
-		case encoder.TextEncoder, *encoder.TextEncoder:
-			enc = NewTextEncoder(l.metaKeys.Keys()...)
-		default:
-			enc = tmp
+		if l.preBuiltEncoders[i] != nil {
+			enc = l.preBuiltEncoders[i]
+		} else {
+			enc = wep.enc
 		}
 		r.recordPackers[i] = &RecordPackerForWriter{
 			record:               r,
@@ -146,6 +150,19 @@ func (l *Logger) createRecord() Record {
 }
 
 func (l *Logger) initLogger() {
+	// Pre-build text encoders for writer-encoder pairs so that createRecord (the
+	// pool's New function) can reference them without allocating per pool-object.
+	l.preBuiltEncoders = make([]Encoder, len(l.writerEncoders))
+	for i, wep := range l.writerEncoders {
+		switch wep.enc.(type) {
+		case encoder.TextEncoder, *encoder.TextEncoder:
+			l.preBuiltEncoders[i] = NewTextEncoder(l.metaKeys.Keys()...)
+		}
+	}
+	if l.consolePrint {
+		l.preBuiltConsoleEncoder = NewTextEncoder(l.metaKeys.Keys()...)
+	}
+
 	// init Record pool
 	l.recordPool = newRecordPool(l.createRecord)
 }
