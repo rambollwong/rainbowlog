@@ -38,7 +38,7 @@ func (j JsonEncoder) Durations(dst []byte, unit time.Duration, useInt bool, d ..
 	dst = j.ArrayStart(dst)
 	dst = j.Duration(dst, unit, useInt, d[0])
 	if len(d) > 1 {
-		for _, v := range d {
+		for _, v := range d[1:] {
 			dst = j.Delim(dst)
 			dst = j.Duration(dst, unit, useInt, v)
 		}
