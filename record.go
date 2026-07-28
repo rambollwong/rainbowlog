@@ -131,6 +131,8 @@ func (r *LogRecord) Reset() {
 	r.label = ""
 	r.msg = ""
 	r.doneFunc = nil
+	r.useIntDur = false
+	r.stack = false
 }
 
 // Discard disables the Record that it won't be printed.
