@@ -480,3 +480,169 @@ func TestJsonEncoder_NetworkTypes(t *testing.T) {
 		}
 	})
 }
+
+// ============================== Interface/Any encoding tests ==============================
+
+func TestJsonEncoder_Interface(t *testing.T) {
+	je := JsonEncoder{}
+
+	t.Run("string via JSONMarshalFunc", func(t *testing.T) {
+		got := string(je.Interface(nil, "hello"))
+		if got != `"hello"` {
+			t.Errorf("Interface(string) = %q, want \"hello\"", got)
+		}
+	})
+
+	t.Run("integer", func(t *testing.T) {
+		got := string(je.Interface(nil, 42))
+		if got != "42" {
+			t.Errorf("Interface(42) = %q, want 42", got)
+		}
+	})
+
+	t.Run("struct", func(t *testing.T) {
+		type S struct{ Name string }
+		got := string(je.Interface(nil, S{Name: "x"}))
+		if got != `{"Name":"x"}` {
+			t.Errorf("Interface(struct) = %q, want {\"Name\":\"x\"}", got)
+		}
+	})
+}
+
+func TestTextEncoder_Interface(t *testing.T) {
+	te := TextEncoder{}
+
+	t.Run("string via TextMarshalFunc", func(t *testing.T) {
+		got := string(te.Interface(nil, "hello"))
+		if got != "hello" {
+			t.Errorf("Interface(string) = %q, want hello", got)
+		}
+	})
+
+	t.Run("integer", func(t *testing.T) {
+		got := string(te.Interface(nil, 42))
+		if got != "42" {
+			t.Errorf("Interface(42) = %q, want 42", got)
+		}
+	})
+}
+
+// ============================== Hex/Bytes/IPPrefix tests ==============================
+
+func TestJsonEncoder_Hex(t *testing.T) {
+	je := JsonEncoder{}
+
+	t.Run("hex encoding", func(t *testing.T) {
+		got := string(je.Hex(nil, []byte{0xde, 0xad, 0xbe, 0xef}))
+		if got != `"deadbeef"` {
+			t.Errorf("Hex = %q, want \"deadbeef\"", got)
+		}
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		got := string(je.Hex(nil, nil))
+		if got != `""` {
+			t.Errorf("Hex(nil) = %q, want \"\"", got)
+		}
+	})
+}
+
+func TestTextEncoder_Hex(t *testing.T) {
+	te := TextEncoder{}
+
+	t.Run("hex encoding", func(t *testing.T) {
+		got := string(te.Hex(nil, []byte{0xab, 0xcd}))
+		if got != "abcd" {
+			t.Errorf("Hex = %q, want abcd", got)
+		}
+	})
+}
+
+
+// ============================== Float slice tests ==============================
+
+func TestJsonEncoder_FloatSlices(t *testing.T) {
+	je := JsonEncoder{}
+
+	t.Run("Float32s", func(t *testing.T) {
+		got := string(je.Float32s(nil, 1.5, 2.5, 3.5))
+		if got != "[1.5,2.5,3.5]" {
+			t.Errorf("Float32s = %q, want [1.5,2.5,3.5]", got)
+		}
+	})
+
+	t.Run("Float64s single", func(t *testing.T) {
+		got := string(je.Float64s(nil, 3.14))
+		if got != "[3.14]" {
+			t.Errorf("Float64s = %q, want [3.14]", got)
+		}
+	})
+
+	t.Run("Float64s empty", func(t *testing.T) {
+		got := string(je.Float64s(nil))
+		if got != "[]" {
+			t.Errorf("Float64s() = %q, want []", got)
+		}
+	})
+}
+
+// ============================== Int/Uint slice tests ==============================
+
+func TestJsonEncoder_IntSlices(t *testing.T) {
+	je := JsonEncoder{}
+
+	t.Run("Ints", func(t *testing.T) {
+		got := string(je.Ints(nil, 1, 2, 3))
+		if got != "[1,2,3]" {
+			t.Errorf("Ints = %q, want [1,2,3]", got)
+		}
+	})
+
+	t.Run("Uints", func(t *testing.T) {
+		got := string(je.Uints(nil, 1, 2))
+		if got != "[1,2]" {
+			t.Errorf("Uints = %q, want [1,2]", got)
+		}
+	})
+
+	t.Run("Int8s", func(t *testing.T) {
+		got := string(je.Int8s(nil, 1, -2))
+		if got != "[1,-2]" {
+			t.Errorf("Int8s = %q, want [1,-2]", got)
+		}
+	})
+
+	t.Run("Uint64s", func(t *testing.T) {
+		got := string(je.Uint64s(nil, 100))
+		if got != "[100]" {
+			t.Errorf("Uint64s = %q, want [100]", got)
+		}
+	})
+}
+
+// ============================== Strings tests ==============================
+
+func TestJsonEncoder_Strings(t *testing.T) {
+	je := JsonEncoder{}
+
+	t.Run("multiple", func(t *testing.T) {
+		got := string(je.Strings(nil, "a", "b", "c"))
+		if got != `["a","b","c"]` {
+			t.Errorf("Strings = %q, want [\"a\",\"b\",\"c\"]", got)
+		}
+	})
+
+	t.Run("single", func(t *testing.T) {
+		got := string(je.Strings(nil, "x"))
+		if got != `["x"]` {
+			t.Errorf("Strings = %q, want [\"x\"]", got)
+		}
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		got := string(je.Strings(nil))
+		if got != "[]" {
+			t.Errorf("Strings() = %q, want []", got)
+		}
+	})
+}
