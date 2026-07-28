@@ -98,7 +98,7 @@ func (j JsonEncoder) Nil(dst []byte) []byte {
 }
 
 func (j JsonEncoder) ObjectData(dst []byte, o []byte) []byte {
-	if o[0] == '{' {
+	if len(o) > 0 && o[0] == '{' {
 		if len(dst) > 1 {
 			dst = j.Delim(dst)
 		}
