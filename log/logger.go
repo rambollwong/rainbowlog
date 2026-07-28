@@ -1,8 +1,11 @@
-// Package rainbowlog implements a comprehensive logging solution with multiple
+// Package log implements a comprehensive structured logging solution with multiple
 // writer implementations including buffered, synchronized, and multi-writer
-// capabilities. It supports structured logging with different encoders and
-// offers flexible configuration options for various logging needs.
-package rainbowlog
+// capabilities. It supports JSON and text encoders with zero-allocation chained API,
+// and offers flexible configuration options for various logging needs.
+//
+// The global package (github.com/rambollwong/rainbowlog/global) provides
+// package-level convenience functions on top of this package.
+package log
 
 import (
 	"os"

@@ -2,7 +2,7 @@
 
 ![](https://ramboll.wang/img/RainbowLog_LOGO_SD.png)
 
-[[中文]](./README_CN.md)
+[\[中文\]](./README_CN.md)
 
 Simple, configurable, structured Go logging library.
 
@@ -10,7 +10,7 @@ RainbowLog's API is designed to provide an excellent developer experience and ou
 Its unique chained API allows RainbowLog to write JSON log events by avoiding allocations and reflection.
 
 To keep the codebase and API simple, RainbowLog focuses only on efficient structured logging.
-Pretty log output on the console can be achieved through the provided (but less efficient) `rainbowlog.ConsolePacker`.
+Pretty log output on the console can be achieved through the provided (but less efficient) `log.ConsolePacker`.
 
 ![pretty.png](./pretty.png)
 
@@ -20,7 +20,7 @@ Pretty log output on the console can be achieved through the provided (but less 
 - **Structured Logging**: Supports JSON and text format log output
 - **Flexible Configuration**: Supports multiple configuration methods (code configuration, configuration files, etc.)
 - **Multi-output Support**: Can output to multiple targets simultaneously (files, standard output, etc.)
-- **Log Level Control**: Supports Debug, Info, Warn, Error, Fatal, Panic levels
+- **Log Level Control**: Supports Debug, Info, Warn, Error, Fatal, Panic, Trace levels
 - **Modular Labels**: Supports adding labels to different modules for easy log classification
 - **Hook Mechanism**: Supports custom hook functions to handle log events
 - **Sub Logger**: Supports creating sub loggers that inherit parent configuration
@@ -43,13 +43,13 @@ go get -u github.com/rambollwong/rainbowlog
 package main
 
 import (
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseDefault()
+	global.UseDefault()
 
-	log.Logger.Info().Msg("Hello world!").Done()
+	global.Logger.Info().Msg("Hello world!").Done()
 }
 
 // Output: {"_TIME_":"2024-02-19 19:50:09.008","_LEVEL_":"INFO","_CALLER_":"/path/to/main.go:10","message":"Hello world!"}
@@ -65,17 +65,17 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseRainbowDefault()
+	global.UseRainbowDefault()
 
-	log.Info().Msg("Hello world!").Done()
-	log.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	log.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	log.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	log.Fatal().Msg("fatal to do something").Done()
+	global.Info().Msg("Hello world!").Done()
+	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	global.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
@@ -97,50 +97,50 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseDefaultConfigFile()
+	global.UseDefaultConfigFile()
 
-	log.Info().Msg("Hello world!").Done()
-	log.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	log.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	log.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	log.Fatal().Msg("fatal to do something").Done()
+	global.Info().Msg("Hello world!").Done()
+	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	global.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
-To use `.json` or `.toml` type configuration files, just modify `log.DefaultConfigFileName`, for example:
+To use `.json` or `.toml` type configuration files, just modify `global.DefaultConfigFileName`, for example:
 
 ```go
-log.DefaultConfigFileName = "rainbowlog.json"
+global.DefaultConfigFileName = "rainbowlog.json"
 ```
 
 Or
 
 ```go
-log.DefaultConfigFileName = "rainbowlog.toml"
+global.DefaultConfigFileName = "rainbowlog.toml"
 ```
 
-If you also want to specify the directory where the configuration file is located, just modify `log.DefaultConfigFilePath`:
+If you also want to specify the directory where the configuration file is located, just modify `global.DefaultConfigFilePath`:
 
 ```go
-log.DefaultConfigFilePath = "/path/of/config/files"
+global.DefaultConfigFilePath = "/path/of/config/files"
 ```
 
-> Note: Modifying `log.DefaultConfigFileName` and `log.DefaultConfigFilePath` needs to be executed before `log.UseDefaultConfigFile()`, otherwise it will not take effect.
+> Note: Modifying `global.DefaultConfigFileName` and `global.DefaultConfigFilePath` needs to be executed before `global.UseDefaultConfigFile()`, otherwise it will not take effect.
 
 #### Global Logger with Custom Options
 
-If you want to use custom options for the global logger, we provide the `log.UseCustomOptions(opts ...Option)` API to achieve this.
-Supported `Option` details can be found in [option.go](./option.go).
+If you want to use custom options for the global logger, we provide the `global.UseCustomOptions(opts ...log.Option)` API to achieve this.
+Supported `Option` details can be found in [option.go](./log/option.go).
 
 ### Custom Logger
 
 If you don't want to use the Global Logger, you can initialize a `Logger` instance through the `New` method.
 The `New` method accepts `Option` parameters.
-Supported `Option` details can be found in [option.go](./option.go).
+Supported `Option` details can be found in [option.go](./log/option.go).
 
 ```go
 package main
@@ -149,16 +149,16 @@ import (
 	"errors"
 	"path/filepath"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 )
 
 func main() {
 	DefaultConfigFileName := "rainbowlog.yaml"
 	DefaultConfigFilePath := "/path/of/config/files"
 
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
+	logger := log.New(
+		log.WithDefault(),
+		log.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
 	)
 
 	logger.Info().Msg("Hello world!").Done()
@@ -180,25 +180,25 @@ package main
 import (
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
 func main() {
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithCallerMarshalFunc(nil),
-		rainbowlog.WithLevel(level.Info),
-		rainbowlog.WithLabels("ROOT"),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithCallerMarshalFunc(nil),
+		log.WithLevel(level.Info),
+		log.WithLabels("ROOT"),
 	)
 
 	logger.Debug().Msg("Hello world!").Done()
 	logger.Info().Msg("Hello world!").Done()
 
 	subLogger := logger.SubLogger(
-		rainbowlog.WithLevel(level.Debug),
-		rainbowlog.WithLabels("SUBMODULE"),
+		log.WithLevel(level.Debug),
+		log.WithLabels("SUBMODULE"),
 	)
 
 	subLogger.Debug().Msg("Hello world!").Done()
@@ -226,14 +226,14 @@ package main
 import (
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 )
 
 func main() {
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithTimeFormat(rainbowlog.TimeFormatUnix),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithTimeFormat(log.TimeFormatUnix),
 	)
 
 	logger.Info().Msg("Hello world!").Done()
@@ -251,20 +251,20 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
 func main() {
-	var hook rainbowlog.HookFunc = func(r rainbowlog.Record, level level.Level, message string) {
-		fmt.Printf("hook: %s, %s\n", level.String(), message)
+	var hook log.HookFunc = func(r log.Record, lv level.Level, message string) {
+		fmt.Printf("hook: %s, %s\n", lv.String(), message)
 	}
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithCallerMarshalFunc(nil),
-		rainbowlog.AppendsHooks(hook),
-		rainbowlog.WithLevel(level.Info),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithCallerMarshalFunc(nil),
+		log.AppendsHooks(hook),
+		log.WithLevel(level.Info),
 	)
 
 	logger.Debug().Msg("Hello world!").Done()
@@ -283,10 +283,10 @@ func main() {
 RainbowLog provides BufferedWriter functionality, which can significantly improve log writing performance:
 
 ```go
-bufferedWriter := rainbowlog.BufferedWriter(os.Stdout, 4096)
+bufferedWriter := log.NewBufferedWriter(os.Stdout, 4096)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, bufferedWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, bufferedWriter),
 )
 ```
 
@@ -295,10 +295,10 @@ logger := rainbowlog.New(
 For non-thread-safe Writers, you can use SyncWriter wrapper:
 
 ```go
-syncWriter := rainbowlog.SyncWriter(os.Stdout)
+syncWriter := log.SyncWriter(os.Stdout)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, syncWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, syncWriter),
 )
 ```
 
@@ -309,10 +309,10 @@ logger := rainbowlog.New(
 Supports writing to multiple targets simultaneously:
 
 ```go
-multiWriter := rainbowlog.MultiLevelWriter(os.Stdout, fileWriter)
+multiWriter := log.MultiLevelWriter(os.Stdout, fileWriter)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, multiWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, multiWriter),
 )
 ```
 
@@ -330,7 +330,7 @@ Of course, we provide more features and capabilities, looking forward to your ex
 ## Contact Us
 
 - Email: `ramboll.wong@hotmail.com`
-- Telegram Technical Discussion Group: [[Join Now]](https://t.me/+ovN79ozHG4c1YWNl)
+- Telegram Technical Discussion Group: [\[Join Now\]](https://t.me/+ovN79ozHG4c1YWNl)
 - Blog：[Ramboll's Blog](https://ramboll.wang)
 
 ## Support with a Donation

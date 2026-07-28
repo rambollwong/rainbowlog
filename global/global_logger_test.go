@@ -1,9 +1,9 @@
-package log
+package global
 
 import (
 	"testing"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -29,14 +29,14 @@ func TestUseRainbowDefault(t *testing.T) {
 }
 
 func TestUseCustomOptions(t *testing.T) {
-	UseCustomOptions(rainbowlog.WithLevel(level.Warn))
+	UseCustomOptions(log.WithLevel(level.Warn))
 	require.NotNil(t, Logger)
 }
 
 func TestConvenienceFunctions(t *testing.T) {
 	UseDefault()
 
-	for name, fn := range map[string]func() rainbowlog.Record{
+	for name, fn := range map[string]func() log.Record{
 		"Debug": Debug, "Info": Info, "Warn": Warn, "Error": Error, "Record": Record,
 	} {
 		t.Run(name, func(t *testing.T) {
