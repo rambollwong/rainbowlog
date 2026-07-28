@@ -1,7 +1,8 @@
 package config
 
 import (
-	"os"
+	"errors"
+	"io/fs"
 	"path/filepath"
 	"strings"
 
@@ -110,7 +111,7 @@ func WriteConfigToFile(configFilePath string, config LoggerConfig) error {
 
 	err := v.WriteConfig()
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			err = v.SafeWriteConfig()
 		}
 	}

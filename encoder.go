@@ -12,7 +12,7 @@ var TextEnc Encoder = encoder.TextEncoder{
 	MetaKeys: defaultMetaKeys().Keys(),
 }
 
-var NewTextEncoder = func(metaKeys ...string) Encoder {
+func NewTextEncoder(metaKeys ...string) Encoder {
 	return encoder.TextEncoder{MetaKeys: metaKeys}
 }
 

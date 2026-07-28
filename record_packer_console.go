@@ -15,8 +15,6 @@ var _ recordPacker = (*ConsolePacker)(nil)
 type ConsolePacker struct {
 	RecordPackerForWriter
 	consoleColor bool
-
-	defaultMetaKeys *metaKeys
 }
 
 func (j *ConsolePacker) printCall(consoleColorsKey string, call func(j *ConsolePacker)) {
@@ -176,6 +174,9 @@ func (j *ConsolePacker) createMeta() {
 	// begin
 	*j.meta = j.writerEncoderPair.enc.BeginMarker(*j.meta)
 	// range meta keys
+	if j.record.logger.metaKeys == nil {
+		return
+	}
 	for i, s := range j.record.logger.metaKeys.Keys() {
 		switch s {
 		case MetaTimeFieldName:

@@ -241,7 +241,7 @@ func WithConfig(config config.LoggerConfig) Option {
 func WithConfigFile(configFile string) Option {
 	cfg, err := config.LoadLoggerConfigFromFile(configFile)
 	if err != nil {
-		panic("error load logger config from file: " + configFile)
+		panic("error load logger config from file: " + configFile + ": " + err.Error())
 	}
 	return WithConfig(*cfg)
 }
