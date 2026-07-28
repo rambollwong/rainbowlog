@@ -4,20 +4,28 @@ package log
 import (
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/rambollwong/rainbowlog"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
 var (
+	mu     sync.Mutex
 	Logger *rainbowlog.Logger
 
 	DefaultConfigFilePath = "./"
 	DefaultConfigFileName = "rainbowlog.yaml"
 )
 
-func init() {
-	UseRainbowDefault()
+func lazyInit() {
+	if Logger == nil {
+		mu.Lock()
+		defer mu.Unlock()
+		if Logger == nil {
+			UseRainbowDefault()
+		}
+	}
 }
 
 // UseDefault will initial the global Logger by using default options.
@@ -89,40 +97,48 @@ func UseDefaultConfigFile(opts ...rainbowlog.Option) {
 
 // Record create a new rainbowlog.Record with basic.
 func Record() rainbowlog.Record {
+	lazyInit()
 	return Logger.Record()
 }
 
 // Level create a new rainbowlog.Record with the logger level given.
 func Level(le level.Level) rainbowlog.Record {
+	lazyInit()
 	return Logger.Level(le)
 }
 
 // Debug create a new rainbowlog.Record with debug level setting.
 func Debug() rainbowlog.Record {
+	lazyInit()
 	return Logger.Debug()
 }
 
 // Info create a new rainbowlog.Record with info level setting.
 func Info() rainbowlog.Record {
+	lazyInit()
 	return Logger.Info()
 }
 
 // Warn create a new rainbowlog.Record with warn level setting.
 func Warn() rainbowlog.Record {
+	lazyInit()
 	return Logger.Warn()
 }
 
 // Error create a new rainbowlog.Record with error level setting.
 func Error() rainbowlog.Record {
+	lazyInit()
 	return Logger.Error()
 }
 
 // Fatal create a new rainbowlog.Record with fatal level setting.
 func Fatal() rainbowlog.Record {
+	lazyInit()
 	return Logger.Fatal()
 }
 
 // Panic create a new rainbowlog.Record with panic level setting.
 func Panic() rainbowlog.Record {
+	lazyInit()
 	return Logger.Panic()
 }
