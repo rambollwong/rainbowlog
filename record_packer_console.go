@@ -181,7 +181,7 @@ func (j *ConsolePacker) createMeta() {
 		case MetaTimeFieldName:
 			endI := j.printRainbowStart(j.meta, i, s)
 			*j.meta = j.writerEncoderPair.enc.Key(*j.meta, MetaTimeFieldName)
-			*j.meta = j.writerEncoderPair.enc.Time(*j.meta, j.record.logger.timeFormat, time.Now())
+			*j.meta = j.writerEncoderPair.enc.Time(*j.meta, j.record.logger.timeFormat, TimestampFunc())
 			j.printRainbowEnd(j.meta, i, endI)
 		case MetaLabelFieldName:
 			if j.record.label == "" {
