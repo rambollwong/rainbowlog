@@ -1,6 +1,6 @@
 //go:build windows
 
-package rainbowlog
+package log
 
 import (
 	"os"

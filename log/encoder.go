@@ -1,4 +1,4 @@
-package rainbowlog
+package log
 
 import (
 	"net"

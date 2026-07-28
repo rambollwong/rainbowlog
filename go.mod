@@ -3,7 +3,7 @@ module github.com/rambollwong/rainbowlog
 go 1.26.0
 
 require (
-	github.com/rambollwong/rainbowcat v0.0.0-20250206043332-9b571afe68ca
+	github.com/rambollwong/rainbowcat v0.0.0-20251225072540-5f309f13ce1d
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.10.0
 )
@@ -27,7 +27,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/sync v0.20.0
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

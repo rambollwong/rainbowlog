@@ -1,4 +1,4 @@
-package rainbowlog
+package log
 
 import "github.com/rambollwong/rainbowlog/level"
 

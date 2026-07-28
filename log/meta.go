@@ -1,4 +1,4 @@
-package rainbowlog
+package log
 
 type metaKeys struct {
 	keys          []string

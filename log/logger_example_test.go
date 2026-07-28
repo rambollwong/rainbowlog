@@ -1,11 +1,11 @@
 //go:build !binary_log
 
-package rainbowlog_test
+package log_test
 
 import (
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	rainbowlog "github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
