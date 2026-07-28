@@ -2,7 +2,7 @@
 
 ![](https://ramboll.wang/img/RainbowLog_LOGO_SD.png)
 
-[[English](./README.md)
+\[[English](./README.md)
 
 简单、可配置、结构化的 Go 日志库。
 
@@ -10,7 +10,7 @@ RainbowLog 的 API 设计旨在提供出色的开发者体验和卓越的性能�
 其独特的链式 API 允许 RainbowLog 通过避免分配和反射来写入 JSON 日志事件。
 
 为了保持代码库和 API 的简洁性，RainbowLog 仅专注于高效的结构化日志记录。
-通过提供的（但效率较低的）`rainbowlog.ConsolePacker` 可以实现控制台上的漂亮日志输出。
+通过提供的（但效率较低的）`log.ConsolePacker` 可以实现控制台上的漂亮日志输出。
 
 ![pretty.png](./pretty.png)
 
@@ -20,7 +20,7 @@ RainbowLog 的 API 设计旨在提供出色的开发者体验和卓越的性能�
 - **结构化日志**: 支持 JSON 和文本格式的日志输出
 - **灵活配置**: 支持多种配置方式（代码配置、配置文件等）
 - **多输出支持**: 可同时输出到多个目标（文件、标准输出等）
-- **日志级别控制**: 支持 Debug、Info、Warn、Error、Fatal、Panic 等级别
+- **日志级别控制**: 支持 Debug、Info、Warn、Error、Fatal、Panic、Trace 等级别
 - **模块化标签**: 支持为不同模块添加标签便于日志分类
 - **钩子机制**: 支持自定义钩子函数处理日志事件
 - **子日志记录器**: 支持创建继承父级配置的子日志记录器
@@ -43,13 +43,13 @@ go get -u github.com/rambollwong/rainbowlog
 package main
 
 import (
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseDefault()
+	global.UseDefault()
 
-	log.Logger.Info().Msg("Hello world!").Done()
+	global.Logger.Info().Msg("Hello world!").Done()
 }
 
 // Output: {"_TIME_":"2024-02-19 19:50:09.008","_LEVEL_":"INFO","_CALLER_":"/path/to/main.go:10","message":"Hello world!"}
@@ -65,17 +65,17 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseRainbowDefault()
+	global.UseRainbowDefault()
 
-	log.Info().Msg("Hello world!").Done()
-	log.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	log.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	log.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	log.Fatal().Msg("fatal to do something").Done()
+	global.Info().Msg("Hello world!").Done()
+	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	global.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
@@ -97,50 +97,50 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/log"
+	"github.com/rambollwong/rainbowlog/global"
 )
 
 func main() {
-	log.UseDefaultConfigFile()
+	global.UseDefaultConfigFile()
 
-	log.Info().Msg("Hello world!").Done()
-	log.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	log.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	log.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	log.Fatal().Msg("fatal to do something").Done()
+	global.Info().Msg("Hello world!").Done()
+	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	global.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
-如果要使用 `.json` 或 `.toml` 类型的配置文件，只需修改 `log.DefaultConfigFileName`，例如：
+如果要使用 `.json` 或 `.toml` 类型的配置文件，只需修改 `global.DefaultConfigFileName`，例如：
 
 ```go
-log.DefaultConfigFileName = "rainbowlog.json"
+global.DefaultConfigFileName = "rainbowlog.json"
 ```
 
 或者
 
 ```go
-log.DefaultConfigFileName = "rainbowlog.toml"
+global.DefaultConfigFileName = "rainbowlog.toml"
 ```
 
-如果您还想指定配置文件所在的目录，只需修改 `log.DefaultConfigFilePath`：
+如果您还想指定配置文件所在的目录，只需修改 `global.DefaultConfigFilePath`：
 
 ```go
-log.DefaultConfigFilePath = "/path/of/config/files"
+global.DefaultConfigFilePath = "/path/of/config/files"
 ```
 
-> 注意: 修改 `log.DefaultConfigFileName` 和 `log.DefaultConfigFilePath` 需要在 `log.UseDefaultConfigFile()` 之前执行，否则不会生效。
+> 注意: 修改 `global.DefaultConfigFileName` 和 `global.DefaultConfigFilePath` 需要在 `global.UseDefaultConfigFile()` 之前执行，否则不会生效。
 
 #### 使用自定义选项的Global Logger
 
-如果您想为全局日志记录器使用自定义选项，我们保留了 `log.UseCustomOptions(opts ...Option)` API 来实现。
-支持的 `Option` 详见 [option.go](./option.go)。
+如果您想为全局日志记录器使用自定义选项，我们保留了 `global.UseCustomOptions(opts ...log.Option)` API 来实现。
+支持的 `Option` 详见 [option.go](./log/option.go)。
 
 ### 自定义Logger
 
 如果您不想使用Global Logger，可以通过 `New` 方法初始化一个 `Logger` 实例。
 `New` 方法接收 `Option` 参数。
-支持的 `Option` 详见 [option.go](./option.go)。
+支持的 `Option` 详见 [option.go](./log/option.go)。
 
 ```go
 package main
@@ -149,16 +149,16 @@ import (
 	"errors"
 	"path/filepath"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 )
 
 func main() {
 	DefaultConfigFileName := "rainbowlog.yaml"
 	DefaultConfigFilePath := "/path/of/config/files"
 
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
+	logger := log.New(
+		log.WithDefault(),
+		log.WithConfigFile(filepath.Join(DefaultConfigFilePath, DefaultConfigFileName)),
 	)
 
 	logger.Info().Msg("Hello world!").Done()
@@ -180,25 +180,25 @@ package main
 import (
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
 func main() {
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithCallerMarshalFunc(nil),
-		rainbowlog.WithLevel(level.Info),
-		rainbowlog.WithLabels("ROOT"),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithCallerMarshalFunc(nil),
+		log.WithLevel(level.Info),
+		log.WithLabels("ROOT"),
 	)
 
 	logger.Debug().Msg("Hello world!").Done()
 	logger.Info().Msg("Hello world!").Done()
 
 	subLogger := logger.SubLogger(
-		rainbowlog.WithLevel(level.Debug),
-		rainbowlog.WithLabels("SUBMODULE"),
+		log.WithLevel(level.Debug),
+		log.WithLabels("SUBMODULE"),
 	)
 
 	subLogger.Debug().Msg("Hello world!").Done()
@@ -226,14 +226,14 @@ package main
 import (
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 )
 
 func main() {
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithTimeFormat(rainbowlog.TimeFormatUnix),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithTimeFormat(log.TimeFormatUnix),
 	)
 
 	logger.Info().Msg("Hello world!").Done()
@@ -251,20 +251,20 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rambollwong/rainbowlog"
+	"github.com/rambollwong/rainbowlog/log"
 	"github.com/rambollwong/rainbowlog/level"
 )
 
 func main() {
-	var hook rainbowlog.HookFunc = func(r rainbowlog.Record, level level.Level, message string) {
-		fmt.Printf("hook: %s, %s\n", level.String(), message)
+	var hook log.HookFunc = func(r log.Record, lv level.Level, message string) {
+		fmt.Printf("hook: %s, %s\n", lv.String(), message)
 	}
-	logger := rainbowlog.New(
-		rainbowlog.WithDefault(),
-		rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, os.Stderr),
-		rainbowlog.WithCallerMarshalFunc(nil),
-		rainbowlog.AppendsHooks(hook),
-		rainbowlog.WithLevel(level.Info),
+	logger := log.New(
+		log.WithDefault(),
+		log.AppendsEncoderWriters(log.JsonEnc, os.Stderr),
+		log.WithCallerMarshalFunc(nil),
+		log.AppendsHooks(hook),
+		log.WithLevel(level.Info),
 	)
 
 	logger.Debug().Msg("Hello world!").Done()
@@ -283,10 +283,10 @@ func main() {
 RainbowLog 提供了BufferedWriter功能，可以显著提高日志写入性能：
 
 ```go
-bufferedWriter := rainbowlog.BufferedWriter(os.Stdout, 4096)
+bufferedWriter := log.NewBufferedWriter(os.Stdout, 4096)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, bufferedWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, bufferedWriter),
 )
 ```
 
@@ -295,10 +295,10 @@ logger := rainbowlog.New(
 对于非线程安全的Writer，可以使用SyncWriter包装：
 
 ```go
-syncWriter := rainbowlog.SyncWriter(os.Stdout)
+syncWriter := log.SyncWriter(os.Stdout)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, syncWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, syncWriter),
 )
 ```
 
@@ -309,10 +309,10 @@ logger := rainbowlog.New(
 支持同时写入多个目标：
 
 ```go
-multiWriter := rainbowlog.MultiLevelWriter(os.Stdout, fileWriter)
+multiWriter := log.MultiLevelWriter(os.Stdout, fileWriter)
 
-logger := rainbowlog.New(
-    rainbowlog.AppendsEncoderWriters(rainbowlog.JsonEnc, multiWriter),
+logger := log.New(
+    log.AppendsEncoderWriters(log.JsonEnc, multiWriter),
 )
 ```
 
@@ -330,7 +330,7 @@ logger := rainbowlog.New(
 ## 联系我们
 
 - 邮箱：`ramboll.wong@hotmail.com`
-- Telegram 技术交流群：[[点击加入]](https://t.me/+ovN79ozHG4c1YWNl)
+- Telegram 技术交流群：[\[点击加入\]](https://t.me/+ovN79ozHG4c1YWNl)
 - 博客：[Ramboll's Blog](https://ramboll.wang)
 
 ## 打赏支持

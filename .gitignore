@@ -20,5 +20,6 @@ _test
 .idea
 
 # AI Doc
+prompt.md
 AGENTS.md
 .reasonix/
