@@ -93,7 +93,7 @@ func (j TextEncoder) IPPrefix(dst []byte, pfx net.IPNet) []byte {
 }
 
 func (j TextEncoder) Interface(dst []byte, i interface{}) []byte {
-	marshaled, err := JSONMarshalFunc(i)
+	marshaled, err := TextMarshalFunc(i)
 	if err != nil {
 		return j.String(dst, fmt.Sprintf("marshaling error: %v", err))
 	}
