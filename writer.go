@@ -89,7 +89,7 @@ func (t multiLevelWriter) Write(bz []byte) (n int, err error) {
 			continue
 		}
 		if n != len(bz) {
-			err = io.ErrShortWrite
+			errs = append(errs, io.ErrShortWrite)
 			continue
 		}
 	}

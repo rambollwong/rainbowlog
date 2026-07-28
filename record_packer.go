@@ -92,7 +92,11 @@ func (j *RecordPackerForWriter) Err(err error) {
 	if err == nil || err.Error() == "" {
 		return
 	}
-	j.Str(ErrFieldName, j.record.logger.errorMarshalFunc(err))
+	emf := j.record.logger.errorMarshalFunc
+	if emf == nil {
+		emf = GlobalErrorMarshalFunc
+	}
+	j.Str(ErrFieldName, emf(err))
 	if j.record.stack && j.record.logger.errorStackMarshalFunc != nil {
 		switch esm := j.record.logger.errorStackMarshalFunc(err).(type) {
 		case nil:
