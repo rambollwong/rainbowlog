@@ -163,7 +163,7 @@ func (j *ConsolePacker) printRainbowEnd(dst *[]byte, metaIdx int, i int) {
 		if metaIdx == 0 {
 			*dst = j.writerEncoderPair.enc.BlankSpace(*dst)
 		}
-		for t := 0; t < i; t++ {
+		for range i {
 			*dst = colorEnd(*dst)
 		}
 	}

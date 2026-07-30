@@ -36,7 +36,7 @@ type Encoder interface {
 	Int32(dst []byte, val int32) []byte
 	Int64(dst []byte, val int64) []byte
 	Int8(dst []byte, val int8) []byte
-	Interface(dst []byte, i interface{}) []byte
+	Interface(dst []byte, i any) []byte
 	Key(dst []byte, key string) []byte
 	LineBreak(dst []byte) []byte
 	MACAddr(dst []byte, ha net.HardwareAddr) []byte

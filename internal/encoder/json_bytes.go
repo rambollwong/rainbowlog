@@ -2,7 +2,7 @@ package encoder
 
 func (j JsonEncoder) Bytes(dst []byte, s []byte) []byte {
 	dst = j.DoubleQuote(dst)
-	for i := 0; i < len(s); i++ {
+	for i := range s {
 		if !noEscapeTable[s[i]] {
 			dst = appendBytesComplex(dst, s, i)
 			dst = j.DoubleQuote(dst)

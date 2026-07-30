@@ -11,7 +11,7 @@ import (
 // Making it package level instead of embedded in Encoder brings
 // some extra efforts at importing, but avoids value copy when the functions
 // of Encoder being invoked.
-var JSONMarshalFunc func(v interface{}) ([]byte, error) = json.Marshal
+var JSONMarshalFunc func(v any) ([]byte, error) = json.Marshal
 
 type JsonEncoder struct{}
 
@@ -77,7 +77,7 @@ func (j JsonEncoder) IPPrefix(dst []byte, pfx net.IPNet) []byte {
 	return j.String(dst, pfx.String())
 }
 
-func (j JsonEncoder) Interface(dst []byte, i interface{}) []byte {
+func (j JsonEncoder) Interface(dst []byte, i any) []byte {
 	marshaled, err := JSONMarshalFunc(i)
 	if err != nil {
 		return j.String(dst, fmt.Sprintf("marshaling error: %v", err))

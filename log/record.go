@@ -25,7 +25,7 @@ type Record interface {
 	Discard() Record
 	Done()
 	Msg(msg string) Record
-	Msgf(format string, v ...interface{}) Record
+	Msgf(format string, v ...any) Record
 	Err(err error) Record
 	Str(key string, val string) Record
 	Strs(key string, vals ...string) Record
@@ -194,7 +194,7 @@ func (r *LogRecord) Msg(msg string) Record {
 }
 
 // Msgf adds the formatted msg as the message field if not empty.
-func (r *LogRecord) Msgf(format string, v ...interface{}) Record {
+func (r *LogRecord) Msgf(format string, v ...any) Record {
 	return r.Msg(fmt.Sprintf(format, v...))
 }
 
@@ -628,7 +628,7 @@ func (n *NilRecord) Msg(msg string) Record {
 	return n
 }
 
-func (n *NilRecord) Msgf(format string, v ...interface{}) Record {
+func (n *NilRecord) Msgf(format string, v ...any) Record {
 	return n
 }
 

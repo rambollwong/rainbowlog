@@ -86,7 +86,7 @@ func TestBufferedWriter(t *testing.T) {
 
 		// Perform concurrent writes
 		var wg sync.WaitGroup
-		for i := 0; i < 10; i++ {
+		for i := range 10 {
 			wg.Add(1)
 			go func(i int) {
 				defer wg.Done()
@@ -165,13 +165,11 @@ func TestSyncWriter(t *testing.T) {
 
 		// Perform concurrent writes
 		var wg sync.WaitGroup
-		for i := 0; i < 10; i++ {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+		for range 10 {
+			wg.Go(func() {
 				_, err := writer.Write([]byte("test"))
 				assert.NoError(t, err)
-			}()
+			})
 		}
 		wg.Wait()
 
@@ -188,7 +186,7 @@ func TestSyncWriter(t *testing.T) {
 
 		// Perform concurrent level writes
 		var wg sync.WaitGroup
-		for i := 0; i < 10; i++ {
+		for i := range 10 {
 			wg.Add(1)
 			go func(i int) {
 				defer wg.Done()

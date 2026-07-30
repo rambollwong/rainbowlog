@@ -17,7 +17,7 @@ type recordPool struct {
 func newRecordPool(newFunc NewRecordFunc) *recordPool {
 	return &recordPool{
 		pool: &sync.Pool{
-			New: func() interface{} {
+			New: func() any {
 				return newFunc()
 			},
 		},

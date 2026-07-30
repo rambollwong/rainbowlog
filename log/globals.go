@@ -159,13 +159,13 @@ func NewShortCallerMarshalFunc(callerTruncationIdentifier string) CallerMarshalF
 		}
 
 		// Find the truncation index and create shortened file path
-		idx := strings.Index(file, callerTruncationIdentifier)
-		if idx == -1 {
+		_, after, ok0 := strings.Cut(file, callerTruncationIdentifier)
+		if !ok0 {
 			// If identifier not found, use only the file name
 			short = file[strings.LastIndex(file, "/")+1:]
 		} else {
 			// If identifier found, truncate the path from that point
-			short = file[idx+len(callerTruncationIdentifier):]
+			short = after
 		}
 
 		// Store the shortened caller in cache

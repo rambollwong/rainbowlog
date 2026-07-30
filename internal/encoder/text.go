@@ -3,12 +3,13 @@ package encoder
 import (
 	"fmt"
 	"net"
+	"slices"
 	"strconv"
 )
 
 // TextMarshalFunc is used to marshal interface to text byte slice.
-var TextMarshalFunc func(v interface{}) ([]byte, error) = func(v interface{}) ([]byte, error) {
-	return []byte(fmt.Sprintf("%v", v)), nil
+var TextMarshalFunc func(v any) ([]byte, error) = func(v any) ([]byte, error) {
+	return fmt.Appendf(nil, "%v", v), nil
 }
 
 type TextEncoder struct {
@@ -16,12 +17,7 @@ type TextEncoder struct {
 }
 
 func (j TextEncoder) isMetaKey(key string) bool {
-	for _, metaKey := range j.MetaKeys {
-		if metaKey == key {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(j.MetaKeys, key)
 }
 
 func (j TextEncoder) MetaEnd(dst []byte) []byte {
@@ -92,7 +88,7 @@ func (j TextEncoder) IPPrefix(dst []byte, pfx net.IPNet) []byte {
 	return j.String(dst, pfx.String())
 }
 
-func (j TextEncoder) Interface(dst []byte, i interface{}) []byte {
+func (j TextEncoder) Interface(dst []byte, i any) []byte {
 	marshaled, err := TextMarshalFunc(i)
 	if err != nil {
 		return j.String(dst, fmt.Sprintf("marshaling error: %v", err))

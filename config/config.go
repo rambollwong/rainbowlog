@@ -100,7 +100,7 @@ func LoadLoggerConfigFromFile(configFile string) (*LoggerConfig, error) {
 func WriteConfigToFile(configFilePath string, config LoggerConfig) error {
 	v := viper.New()
 
-	configMap := make(map[string]interface{})
+	configMap := make(map[string]any)
 	configMap["rainbowlog"] = config
 
 	v.SetConfigFile(configFilePath)
