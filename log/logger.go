@@ -3,7 +3,7 @@
 // capabilities. It supports JSON and text encoders with zero-allocation chained API,
 // and offers flexible configuration options for various logging needs.
 //
-// The global package (github.com/rambollwong/rainbowlog/global) provides
+// The logger package (github.com/rambollwong/rainbowlog/logger) provides
 // package-level convenience functions on top of this package.
 package log
 

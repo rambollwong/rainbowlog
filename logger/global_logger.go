@@ -1,5 +1,5 @@
-// Package global provides the definition and initialization operation of a global rainbow logger.
-package global
+// Package logger provides the definition and initialization operation of a global rainbow logger.
+package logger
 
 import (
 	"os"

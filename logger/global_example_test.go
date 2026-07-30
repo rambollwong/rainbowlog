@@ -1,4 +1,4 @@
-package global
+package logger
 
 import (
 	"github.com/rambollwong/rainbowlog/level"

@@ -43,13 +43,13 @@ go get -u github.com/rambollwong/rainbowlog
 package main
 
 import (
-	"github.com/rambollwong/rainbowlog/global"
+	"github.com/rambollwong/rainbowlog/logger"
 )
 
 func main() {
-	global.UseDefault()
+	logger.UseDefault()
 
-	global.Logger.Info().Msg("Hello world!").Done()
+	logger.Logger.Info().Msg("Hello world!").Done()
 }
 
 // Output: {"_TIME_":"2024-02-19 19:50:09.008","_LEVEL_":"INFO","_CALLER_":"/path/to/main.go:10","message":"Hello world!"}
@@ -65,17 +65,17 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/global"
+	"github.com/rambollwong/rainbowlog/logger"
 )
 
 func main() {
-	global.UseRainbowDefault()
+	logger.UseRainbowDefault()
 
-	global.Info().Msg("Hello world!").Done()
-	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	global.Fatal().Msg("fatal to do something").Done()
+	logger.Info().Msg("Hello world!").Done()
+	logger.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	logger.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	logger.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	logger.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
@@ -97,43 +97,43 @@ package main
 import (
 	"errors"
 
-	"github.com/rambollwong/rainbowlog/global"
+	"github.com/rambollwong/rainbowlog/logger"
 )
 
 func main() {
-	global.UseDefaultConfigFile()
+	logger.UseDefaultConfigFile()
 
-	global.Info().Msg("Hello world!").Done()
-	global.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
-	global.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
-	global.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
-	global.Fatal().Msg("fatal to do something").Done()
+	logger.Info().Msg("Hello world!").Done()
+	logger.Debug().WithLabels("MODEL1").Msg("Something debugging...").Done()
+	logger.Warn().WithLabels("MODEL2", "SERVICE1").Msg("Something warning!").Int("IntegerValue", 888).Done()
+	logger.Error().Msg("failed to do something").Err(errors.New("something wrong")).Done()
+	logger.Fatal().Msg("fatal to do something").Done()
 }
 ```
 
-如果要使用 `.json` 或 `.toml` 类型的配置文件，只需修改 `global.DefaultConfigFileName`，例如：
+如果要使用 `.json` 或 `.toml` 类型的配置文件，只需修改 `logger.DefaultConfigFileName`，例如：
 
 ```go
-global.DefaultConfigFileName = "rainbowlog.json"
+logger.DefaultConfigFileName = "rainbowlog.json"
 ```
 
 或者
 
 ```go
-global.DefaultConfigFileName = "rainbowlog.toml"
+logger.DefaultConfigFileName = "rainbowlog.toml"
 ```
 
-如果您还想指定配置文件所在的目录，只需修改 `global.DefaultConfigFilePath`：
+如果您还想指定配置文件所在的目录，只需修改 `logger.DefaultConfigFilePath`：
 
 ```go
-global.DefaultConfigFilePath = "/path/of/config/files"
+logger.DefaultConfigFilePath = "/path/of/config/files"
 ```
 
-> 注意: 修改 `global.DefaultConfigFileName` 和 `global.DefaultConfigFilePath` 需要在 `global.UseDefaultConfigFile()` 之前执行，否则不会生效。
+> 注意: 修改 `logger.DefaultConfigFileName` 和 `logger.DefaultConfigFilePath` 需要在 `logger.UseDefaultConfigFile()` 之前执行，否则不会生效。
 
 #### 使用自定义选项的Global Logger
 
-如果您想为全局日志记录器使用自定义选项，我们保留了 `global.UseCustomOptions(opts ...log.Option)` API 来实现。
+如果您想为全局日志记录器使用自定义选项，我们保留了 `logger.UseCustomOptions(opts ...log.Option)` API 来实现。
 支持的 `Option` 详见 [option.go](./log/option.go)。
 
 ### 自定义Logger
