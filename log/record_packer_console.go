@@ -205,6 +205,9 @@ func (j *ConsolePacker) createMeta() {
 			*j.meta = j.writerEncoderPair.enc.String(*j.meta, j.record.level.KeyFieldValue())
 			j.printRainbowEnd(j.meta, i, endI)
 		case MetaCallerFieldName:
+			if j.record.ignoreCaller {
+				continue
+			}
 			if j.record.logger.callerMarshalFunc == nil {
 				continue
 			}

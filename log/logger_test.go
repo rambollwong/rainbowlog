@@ -1,6 +1,7 @@
 package log
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/rambollwong/rainbowlog/level"
@@ -175,6 +176,69 @@ func TestLogRecord_UseIntDur(t *testing.T) {
 	rec := logger.Info().UseIntDur()
 	assert.NotNil(t, rec)
 	assert.True(t, rec.(*LogRecord).useIntDur)
+}
+
+func TestLogRecord_IgnoreCaller(t *testing.T) {
+	logger := New(
+		WithLevel(level.Debug),
+		WithConsolePrint(false),
+		AppendsEncoderWriters(JsonEnc, &nullWriter{}),
+	)
+	rec := logger.Info().IgnoreCaller()
+	assert.NotNil(t, rec)
+	assert.True(t, rec.(*LogRecord).ignoreCaller)
+}
+
+func TestLogRecord_IgnoreCallerResetsOnReuse(t *testing.T) {
+	logger := New(
+		WithLevel(level.Debug),
+		WithConsolePrint(false),
+		AppendsEncoderWriters(JsonEnc, &nullWriter{}),
+	)
+
+	// Set ignoreCaller and verify
+	rec1 := logger.Info().IgnoreCaller().(*LogRecord)
+	assert.True(t, rec1.ignoreCaller, "ignoreCaller should be true after IgnoreCaller()")
+
+	// Simulate Done -> Put -> Reset
+	logger.recordPool.Put(rec1)
+
+	// Reused record should have ignoreCaller reset
+	rec2 := logger.Record().(*LogRecord)
+	assert.False(t, rec2.ignoreCaller, "ignoreCaller should be reset to false on reuse")
+}
+
+func TestLogRecord_IgnoreCallerSuppressesOutput(t *testing.T) {
+	buf := &bytes.Buffer{}
+	logger := New(
+		WithLevel(level.Debug),
+		WithConsolePrint(false),
+		WithMetaKeys(MetaCallerFieldName),
+		AppendsEncoderWriters(JsonEnc, buf),
+	)
+
+	// With IgnoreCaller — output should NOT contain caller
+	logger.Info().IgnoreCaller().Str("k", "v").Msg("no caller").Done()
+	noCallerOutput := buf.String()
+	assert.NotContains(t, noCallerOutput, MetaCallerFieldName,
+		"output with IgnoreCaller() should not contain caller field")
+
+	buf.Reset()
+
+	// Without IgnoreCaller — output SHOULD contain caller
+	logger.Info().Str("k", "v").Msg("with caller").Done()
+	withCallerOutput := buf.String()
+	assert.Contains(t, withCallerOutput, MetaCallerFieldName,
+		"output without IgnoreCaller() should contain caller field")
+}
+
+func TestNilRecord_IgnoreCaller(t *testing.T) {
+	rec := (&NilRecord{}).IgnoreCaller()
+	assert.NotNil(t, rec)
+	// Should not panic
+	assert.NotPanics(t, func() {
+		rec.IgnoreCaller().Msg("test").Done()
+	})
 }
 
 func TestLogRecord_FatalAtDisabledLevel(t *testing.T) {

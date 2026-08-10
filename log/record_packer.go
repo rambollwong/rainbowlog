@@ -133,6 +133,9 @@ func (j *RecordPackerForWriter) createMeta() {
 			*j.meta = j.writerEncoderPair.enc.Key(*j.meta, MetaLevelFieldName)
 			*j.meta = j.writerEncoderPair.enc.String(*j.meta, j.record.logger.levelFieldMarshalFunc(j.record.level))
 		case MetaCallerFieldName:
+			if j.record.ignoreCaller {
+				continue
+			}
 			if j.record.logger.callerMarshalFunc == nil {
 				continue
 			}

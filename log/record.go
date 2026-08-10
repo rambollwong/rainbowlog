@@ -21,6 +21,7 @@ type Record interface {
 	WithDoneFunc(f func(msg string)) Record
 	WithCallerSkip(skip int) Record
 	UseIntDur() Record
+	IgnoreCaller() Record
 	Reset()
 	Discard() Record
 	Done()
@@ -77,6 +78,7 @@ type LogRecord struct {
 	msg           string
 	useIntDur     bool
 	stack         bool
+	ignoreCaller  bool
 	doneFunc      func(msg string)
 
 	logger *Logger
@@ -114,6 +116,12 @@ func (r *LogRecord) UseIntDur() Record {
 	return r
 }
 
+// IgnoreCaller sets ignoreCaller to true so that the caller info will not be printed.
+func (r *LogRecord) IgnoreCaller() Record {
+	r.ignoreCaller = true
+	return r
+}
+
 func (r *LogRecord) strikeOrNot() bool {
 	if r.level >= r.logger.level {
 		return false
@@ -133,6 +141,7 @@ func (r *LogRecord) Reset() {
 	r.doneFunc = nil
 	r.useIntDur = false
 	r.stack = false
+	r.ignoreCaller = false
 }
 
 // Discard disables the Record that it won't be printed.
@@ -611,6 +620,10 @@ func (n *NilRecord) WithCallerSkip(skip int) Record {
 }
 
 func (n *NilRecord) UseIntDur() Record {
+	return n
+}
+
+func (n *NilRecord) IgnoreCaller() Record {
 	return n
 }
 
