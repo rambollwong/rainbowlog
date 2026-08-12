@@ -2,7 +2,7 @@
 
 ![](https://ramboll.wang/img/RainbowLog_LOGO_SD.png)
 
-\[[English](./README.md)
+[\[English\]](./README.md)
 
 简单、可配置、结构化的 Go 日志库。
 
