@@ -86,6 +86,13 @@ func LoadLoggerConfigFromFile(configFile string) (*LoggerConfig, error) {
 	if err := v.ReadInConfig(); err != nil {
 		return nil, err
 	}
+	return LoadLoggerConfigFromViper(v)
+}
+
+// LoadLoggerConfigFromViper loads the logger configuration from a *viper.Viper instance.
+// It unmarshals the value under the "rainbowlog" key into a *LoggerConfig.
+// Returns the loaded *LoggerConfig, or an error if unmarshaling fails.
+func LoadLoggerConfigFromViper(v *viper.Viper) (*LoggerConfig, error) {
 	cfg := new(LoggerConfig)
 	if err := v.UnmarshalKey("rainbowlog", cfg); err != nil {
 		return nil, err
