@@ -2,7 +2,7 @@
 
 ![](https://ramboll.wang/img/RainbowLog_LOGO_SD.png)
 
-[\[中文\]](./README_CN.md)
+[\[中文\]](./README.zh_cn.md)
 
 Simple, configurable, structured Go logging library.
 
