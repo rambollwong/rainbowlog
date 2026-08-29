@@ -3,8 +3,10 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,4 +64,55 @@ func TestLoadLoggerConfigFromFile(t *testing.T) {
 		require.Equal(t, cfg.TimeRollingFileConfig.UseBufferedWriter, cfg2.TimeRollingFileConfig.UseBufferedWriter)
 		require.Equal(t, cfg.TimeRollingFileConfig.WriterBufferSize, cfg2.TimeRollingFileConfig.WriterBufferSize)
 	}
+}
+
+func TestLoadLoggerConfigFromEnv(t *testing.T) {
+	t.Setenv("RAINBOWLOG_ENABLE", "false")
+	t.Setenv("RAINBOWLOG_LEVEL", "ERROR")
+	t.Setenv("RAINBOWLOG_LABEL", "env-label")
+	t.Setenv("RAINBOWLOG_STACK", "true")
+	t.Setenv("RAINBOWLOG_ENABLECONSOLEPRINTING", "false")
+	t.Setenv("RAINBOWLOG_ENABLERAINBOWCONSOLE", "false")
+	t.Setenv("RAINBOWLOG_TIMEFORMAT", "UNIX")
+	t.Setenv("RAINBOWLOG_SIZEROLLINGFILECONFIG_ENABLE", "true")
+	t.Setenv("RAINBOWLOG_SIZEROLLINGFILECONFIG_LOGFILEPATH", "./env-log")
+
+	cfg, err := LoadLoggerConfigFromEnv("")
+	require.NoError(t, err)
+	require.False(t, cfg.Enable)
+	require.Equal(t, "ERROR", cfg.Level)
+	require.Equal(t, "env-label", cfg.Label)
+	require.True(t, cfg.Stack)
+	require.False(t, cfg.EnableConsolePrinting)
+	require.False(t, cfg.EnableRainbowConsole)
+	require.Equal(t, "UNIX", cfg.TimeFormat)
+	require.True(t, cfg.SizeRollingFileConfig.Enable)
+	require.Equal(t, "./env-log", cfg.SizeRollingFileConfig.LogFilePath)
+}
+
+func TestLoadLoggerConfigFromEnv_CustomPrefix(t *testing.T) {
+	t.Setenv("MYAPP_LEVEL", "WARN")
+	t.Setenv("MYAPP_LABEL", "custom-label")
+
+	cfg, err := LoadLoggerConfigFromEnv("MYAPP")
+	require.NoError(t, err)
+	require.Equal(t, "WARN", cfg.Level)
+	require.Equal(t, "custom-label", cfg.Label)
+}
+
+func TestLoadLoggerConfigFromViper_EnvOverridesFile(t *testing.T) {
+	v := viper.New()
+	v.SetConfigType("yaml")
+	require.NoError(t, v.ReadConfig(strings.NewReader(`
+rainbowlog:
+  level: INFO
+  label: file-label
+`)))
+
+	t.Setenv("RAINBOWLOG_LEVEL", "ERROR")
+
+	cfg, err := LoadLoggerConfigFromViper(v)
+	require.NoError(t, err)
+	require.Equal(t, "ERROR", cfg.Level, "environment variable should override the file value")
+	require.Equal(t, "file-label", cfg.Label, "field absent in env should keep the file value")
 }

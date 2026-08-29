@@ -91,13 +91,68 @@ func LoadLoggerConfigFromFile(configFile string) (*LoggerConfig, error) {
 
 // LoadLoggerConfigFromViper loads the logger configuration from a *viper.Viper instance.
 // It unmarshals the value under the "rainbowlog" key into a *LoggerConfig.
+// Environment variables prefixed with "RAINBOWLOG_" override the values loaded from the viper instance.
 // Returns the loaded *LoggerConfig, or an error if unmarshaling fails.
 func LoadLoggerConfigFromViper(v *viper.Viper) (*LoggerConfig, error) {
+	sub := v.Sub("rainbowlog")
+	if sub == nil {
+		sub = viper.New()
+		sub.SetEnvPrefix("RAINBOWLOG")
+	}
+	// Sub's parents already carry the "rainbowlog" prefix; combined with the
+	// "." → "_" replacer it maps to environment variables like "RAINBOWLOG_LEVEL".
+	// Setting envPrefix again would duplicate the prefix.
+	sub.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	sub.AutomaticEnv()
+
 	cfg := new(LoggerConfig)
-	if err := v.UnmarshalKey("rainbowlog", cfg); err != nil {
+	if err := sub.Unmarshal(cfg); err != nil {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+// LoadLoggerConfigFromEnv loads the logger configuration from environment variables.
+// Variables use the "<envPrefix>_" prefix with underscores as separators.
+// If envPrefix is empty, "RAINBOWLOG" is used as the default prefix.
+// e.g. RAINBOWLOG_LEVEL, RAINBOWLOG_ENABLECONSOLEPRINTING, RAINBOWLOG_SIZEROLLINGFILECONFIG_ENABLE.
+// Returns the loaded *LoggerConfig, or an error if unmarshaling fails.
+func LoadLoggerConfigFromEnv(envPrefix string) (*LoggerConfig, error) {
+	if envPrefix == "" {
+		envPrefix = "RAINBOWLOG"
+	}
+	v := viper.New()
+	v.SetEnvPrefix(envPrefix)
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
+	// AutomaticEnv is lazy: Unmarshal relies on AllKeys to enumerate keys.
+	// Register zero-value defaults for every field so environment variables
+	// can be read and override them.
+	for _, key := range loggerConfigEnvKeys {
+		v.SetDefault(key, "")
+	}
+
+	cfg := new(LoggerConfig)
+	if err := v.Unmarshal(cfg); err != nil {
+		return nil, err
+	}
+	return cfg, nil
+}
+
+// loggerConfigEnvKeys lists every LoggerConfig field as a flattened key,
+// used by LoadLoggerConfigFromEnv to register zero-value defaults so that
+// AutomaticEnv can enumerate and override them.
+var loggerConfigEnvKeys = []string{
+	"enable", "level", "label", "stack",
+	"enableconsoleprinting", "enablerainbowconsole", "timeformat",
+	"sizerollingfileconfig.enable", "sizerollingfileconfig.logfilepath",
+	"sizerollingfileconfig.logfilebasename", "sizerollingfileconfig.maxbackups",
+	"sizerollingfileconfig.filesizelimit", "sizerollingfileconfig.encoder",
+	"sizerollingfileconfig.usebufferedwriter", "sizerollingfileconfig.writerbuffersize",
+	"timerollingfileconfig.enable", "timerollingfileconfig.logfilepath",
+	"timerollingfileconfig.logfilebasename", "timerollingfileconfig.maxbackups",
+	"timerollingfileconfig.rollingperiod", "timerollingfileconfig.encoder",
+	"timerollingfileconfig.usebufferedwriter", "timerollingfileconfig.writerbuffersize",
 }
 
 // WriteConfigToFile writes the logger configuration to a file.
